@@ -141,3 +141,7 @@
 
 - [x] VSQX parse: VSQ3タグ・prefix補正・defaultLyric 補完（`tests/upstream-parity/vsqxParse.test.ts`）
 - [x] MusicXML parse: 休符スキップ・複数小節・テンポ抽出（`tests/upstream-parity/musicXmlParse.test.ts`）
+- [x] upstream jsTest parity: `TickTimeTransformerTest.kt` 写経（`tests/upstream-parity/tickTimeTransformer.test.ts`）
+- [x] upstream jsTest parity: `PitchCalculationTest.kt` 写経（`tests/upstream-parity/pitchCalculation.test.ts`）
+- [x] upstream jsTest parity: `LyricsReplacementTest.kt` 写経（`tests/upstream-parity/lyricsReplacement.test.ts`）
+- [x] upstream jsTest parity: `PhonemesMappingTest.kt` 写経（`tests/upstream-parity/phonemesMapping.test.ts`）

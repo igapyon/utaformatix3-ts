@@ -34,7 +34,7 @@
 | `upstream/utaformatix/core/src/main/resources/texts` | `src/resources/texts` | Text resources | planned | 必要時のみ導入 |
 | `upstream/utaformatix/src/jsMain/kotlin/ui` | `(excluded)` | UI | excluded | 本リポジトリのスコープ外 |
 | `upstream/utaformatix/src/jsMain/resources/images` | `(excluded)` | UI assets | excluded | 本リポジトリのスコープ外 |
-| `upstream/utaformatix/src/jsTest/kotlin` | `tests/upstream-parity` | Parity tests | planned | Phase 2 以降で段階導入 |
+| `upstream/utaformatix/src/jsTest/kotlin` | `tests/upstream-parity` | Parity tests | in_progress | process 系4本（pitch/lyrics/phonemes）は parity 済み |
 
 ## ファイル対応（着手時に追記）
 
@@ -68,6 +68,10 @@
 | `upstream/utaformatix/core/src/main/kotlin/core/io/UfData.kt` | `src/core/io/UfData.ts` | in_progress | parse/write + version warning + diagnostics 形式を実装 |
 | `upstream/utaformatix/core/src/main/kotlin/core/io/Vsqx.kt` | `src/core/io/Vsqx.ts` | in_progress | VSQX MVP parse/write + extras.vsqx + round-trip/semantic テスト追加 |
 | `upstream/utaformatix/core/src/main/kotlin/core/io/MusicXml.kt` | `src/core/io/MusicXml.ts` | in_progress | generate/preserve(no-op diff 0) + semantic 比較テスト追加 |
+| `upstream/utaformatix/src/jsTest/kotlin/process/pitch/TickTimeTransformerTest.kt` | `tests/upstream-parity/tickTimeTransformer.test.ts` | verified | upstream jsTest parity 済み |
+| `upstream/utaformatix/src/jsTest/kotlin/process/pitch/PitchCalculationTest.kt` | `tests/upstream-parity/pitchCalculation.test.ts` | verified | upstream jsTest parity 済み |
+| `upstream/utaformatix/src/jsTest/kotlin/process/lyrics/LyricsReplacementTest.kt` | `tests/upstream-parity/lyricsReplacement.test.ts` | verified | upstream jsTest parity 済み |
+| `upstream/utaformatix/src/jsTest/kotlin/process/phonemes/PhonemesMappingTest.kt` | `tests/upstream-parity/phonemesMapping.test.ts` | verified | upstream jsTest parity 済み |
 | `(derived)` | `src/core/util/XmlComparison.ts` | in_progress | XML 最小正規化比較（空白/属性順） |
 | `(derived)` | `src/core/util/VsqxArchiveComparison.ts` | in_progress | ZIP展開後エントリ比較ユーティリティ |
 | `(derived)` | `src/core/model/assertProjectInvariants.ts` | in_progress | Phase 1 不変条件チェック |
