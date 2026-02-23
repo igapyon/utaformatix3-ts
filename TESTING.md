@@ -78,6 +78,13 @@ fixtures は手動編集しません。
 - parse時に `validateNotes` 相当のノート整形を適用
 - write時に `includePitch: false` でも空 pitch 構造（`ticks/values/isAbsolute`）を保持
 
+UFDATA 正規化ポリシー（実装上の明示）:
+
+- parse時、入力欠落に対して最小デフォルトを補完する
+- 対象: `tracks`, `pitch`, `tempos`, `timeSignatures`, `measurePrefix`
+- 目的: 上流追従テスト時の診断性向上と、欠落入力に対する安定動作
+- 補完は再設計目的ではなく、既存写経方針を崩さない最小限に留める
+
 ### 2.2 VSQX（ZIP）
 
 VSQX はバイナリ一致を要求しません。
@@ -146,6 +153,7 @@ Phase 1: Model
 - 型整合性
 - 不変条件（tickOn < tickOff 等）
 - nullability 仕様
+- fixture 駆動の process 比較（`tests/fixtures/process`）
 
 Phase 2: UFDATA
 
@@ -201,6 +209,19 @@ npm run build:lib
 
 - `IIFE loaded.` が表示されること
 - `window.Utaformatix3Ts` 経由の最小 API 呼び出し結果が表示されること
+
+## 6.1 全体テスト一括実行
+
+日常の回帰確認は以下を実行します。
+
+```bash
+npm run test:all
+```
+
+内訳:
+
+- `npm run typecheck`
+- `npm run test:parity`（`tests/upstream-parity/*.test.ts` を一括実行）
 
 ## 7. 原則
 
