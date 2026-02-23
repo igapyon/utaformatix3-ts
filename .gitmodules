@@ -1,0 +1,3 @@
+[submodule "upstream/utaformatix"]
+	path = upstream/utaformatix
+	url = https://github.com/sdercolin/utaformatix3.git
