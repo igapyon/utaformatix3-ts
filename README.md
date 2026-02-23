@@ -131,8 +131,11 @@ Output files:
 
 Quick check:
 
-- Open `playground.html` in a browser after `npm run build:lib`.
-- It loads `dist-lib/utaformatix3-ts.iife.js` and shows a minimal API call result.
+- Policy: this repository does not use HTTP server startup for browser checks.
+- Local Chrome (`file://`) usage:
+- Run `npm run build:lib`, then open `index.html` directly in Chrome.
+- The page loads `dist-lib/utaformatix3-ts.iife.js` automatically.
+- It shows the playground UI and allows conversion download between VSQX, MusicXML, and UFDATA.
 
 ## UFDATA API
 
