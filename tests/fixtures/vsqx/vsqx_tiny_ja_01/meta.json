@@ -1,0 +1,5 @@
+{
+  "id": "vsqx_tiny_ja_01",
+  "features": ["notes", "tempo", "timesig", "lyrics", "phoneme"],
+  "knownLimitations": []
+}
