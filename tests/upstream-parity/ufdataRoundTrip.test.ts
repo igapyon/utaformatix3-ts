@@ -2,7 +2,9 @@ declare function require(name: string): any;
 
 import {
   collectUfDataDiagnostics,
+  generateUfdataDocument,
   parseUfdata,
+  parseUfdataDocument,
   UTAFORMATIX_DATA_VERSION,
   writeUfdata,
 } from "../../src/core/io/UfData";
@@ -117,7 +119,152 @@ function testUfdataDiagnostics(): void {
   assert(missingProjectDiagnostics[0].code === "MISSING_PROJECT", "missing project code mismatch");
 }
 
+function testUfdataSimpleImportDisablesPitch(): void {
+  const document = {
+    formatVersion: UTAFORMATIX_DATA_VERSION,
+    project: {
+      name: "simple-import",
+      tracks: [
+        {
+          name: "Track 1",
+          notes: [{ key: 60, lyric: "la", tickOn: 0, tickOff: 480 }],
+          pitch: {
+            ticks: [0, 240, 480],
+            values: [0, 100, null],
+            isAbsolute: false,
+          },
+        },
+      ],
+      timeSignatures: [{ measurePosition: 0, numerator: 4, denominator: 4 }],
+      tempos: [{ tickPosition: 0, bpm: 120 }],
+      measurePrefix: 0,
+    },
+  };
+
+  const project = parseUfdata(document, { simpleImport: true });
+  assert(project.tracks[0].pitch == null, "simpleImport should disable pitch import");
+}
+
+function testUfdataParseValidatesNotes(): void {
+  const document = {
+    formatVersion: UTAFORMATIX_DATA_VERSION,
+    project: {
+      name: "validate-notes",
+      tracks: [
+        {
+          name: "Track 1",
+          notes: [
+            { key: 60, lyric: "a", tickOn: 240, tickOff: 960 },
+            { key: 62, lyric: "b", tickOn: 0, tickOff: 480 },
+          ],
+          pitch: {
+            ticks: [],
+            values: [],
+            isAbsolute: false,
+          },
+        },
+      ],
+      timeSignatures: [{ measurePosition: 0, numerator: 4, denominator: 4 }],
+      tempos: [{ tickPosition: 0, bpm: 120 }],
+      measurePrefix: 0,
+    },
+  };
+
+  const project = parseUfdata(document);
+  assert(project.tracks[0].notes[0].tickOn === 0, "validateNotes should sort notes by tickOn");
+  assert(project.tracks[0].notes[0].tickOff === 240, "validateNotes should trim overlap");
+  assert(project.tracks[0].notes[1].tickOn === 240, "validateNotes second note tickOn mismatch");
+}
+
+function testUfdataWriteAlwaysContainsPitch(): void {
+  const project = parseUfdata({
+    formatVersion: UTAFORMATIX_DATA_VERSION,
+    project: {
+      name: "empty-pitch",
+      tracks: [
+        {
+          name: "Track 1",
+          notes: [{ key: 60, lyric: "la", tickOn: 0, tickOff: 480 }],
+          pitch: {
+            ticks: [],
+            values: [],
+            isAbsolute: false,
+          },
+        },
+      ],
+      timeSignatures: [{ measurePosition: 0, numerator: 4, denominator: 4 }],
+      tempos: [{ tickPosition: 0, bpm: 120 }],
+      measurePrefix: 0,
+    },
+  }, { simpleImport: true });
+  const output = JSON.parse(writeUfdata(project)) as Record<string, any>;
+  const pitch = output.project.tracks[0].pitch;
+  assert(Array.isArray(pitch.ticks), "pitch.ticks should exist");
+  assert(Array.isArray(pitch.values), "pitch.values should exist");
+  assert(pitch.isAbsolute === false, "pitch.isAbsolute should default false");
+}
+
+function testParseUfdataDocumentWithInputFiles(): void {
+  const document = {
+    formatVersion: UTAFORMATIX_DATA_VERSION,
+    project: {
+      name: "doc-parse",
+      tracks: [
+        {
+          name: "Track 1",
+          notes: [{ key: 60, lyric: "la", tickOn: 0, tickOff: 480 }],
+          pitch: {
+            ticks: [],
+            values: [],
+            isAbsolute: false,
+          },
+        },
+      ],
+      timeSignatures: [{ measurePosition: 0, numerator: 4, denominator: 4 }],
+      tempos: [{ tickPosition: 0, bpm: 120 }],
+      measurePrefix: 0,
+    },
+  };
+  const inputFiles = ["dummy.ufdata"];
+  const project = parseUfdataDocument(document, { inputFiles, simpleImport: false });
+  assert(project.inputFiles.length === 1, "parseUfdataDocument should keep inputFiles");
+  assert(project.inputFiles[0] === "dummy.ufdata", "parseUfdataDocument inputFiles mismatch");
+}
+
+function testGenerateUfdataDocumentWithoutPitch(): void {
+  const project = parseUfdata({
+    formatVersion: UTAFORMATIX_DATA_VERSION,
+    project: {
+      name: "doc-generate",
+      tracks: [
+        {
+          name: "Track 1",
+          notes: [{ key: 60, lyric: "la", tickOn: 0, tickOff: 480 }],
+          pitch: {
+            ticks: [0, 240, 480],
+            values: [0, 10, null],
+            isAbsolute: false,
+          },
+        },
+      ],
+      timeSignatures: [{ measurePosition: 0, numerator: 4, denominator: 4 }],
+      tempos: [{ tickPosition: 0, bpm: 120 }],
+      measurePrefix: 0,
+    },
+  });
+
+  const document = generateUfdataDocument(project, { includePitch: false });
+  assert(document.project.tracks[0].pitch.ticks.length === 0, "includePitch=false should clear pitch.ticks");
+  assert(document.project.tracks[0].pitch.values.length === 0, "includePitch=false should clear pitch.values");
+  assert(document.project.tracks[0].pitch.isAbsolute === false, "includePitch=false pitch.isAbsolute mismatch");
+}
+
 testUfdataRoundTrip();
 testUfdataVersionWarning();
 testUfdataIgnoresExtrasInSemanticCheck();
 testUfdataDiagnostics();
+testUfdataSimpleImportDisablesPitch();
+testUfdataParseValidatesNotes();
+testUfdataWriteAlwaysContainsPitch();
+testParseUfdataDocumentWithInputFiles();
+testGenerateUfdataDocumentWithoutPitch();
