@@ -205,10 +205,11 @@ Phase 4: MusicXML
 npm run build:lib
 ```
 
-生成後、以下のいずれかで確認します。
+生成後、以下で確認します。
 
 - 方針: ブラウザ確認のために HTTP サーバーは起動しない
-- ローカル Chrome 直開き: `npm run build:lib` 実行後に `index.html` を `file://` で開く
+- `npm run build:lib` 実行後に `index.html` をブラウザで開く
+- `index.html` はプロトコルに関係なく `dist-lib/utaformatix3-ts.iife.js` を読み込む
 
 - 画面上で入力ファイルを選択できること
 - `Download VSQX` / `Download MusicXML` / `Download UFDATA` で変換ファイルを保存できること

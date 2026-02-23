@@ -132,9 +132,8 @@ Output files:
 Quick check:
 
 - Policy: this repository does not use HTTP server startup for browser checks.
-- Local Chrome (`file://`) usage:
-- Run `npm run build:lib`, then open `index.html` directly in Chrome.
-- The page loads `dist-lib/utaformatix3-ts.iife.js` automatically.
+- Run `npm run build:lib`, then open `index.html` in a browser.
+- `index.html` always loads `dist-lib/utaformatix3-ts.iife.js` (regardless of protocol).
 - It shows the playground UI and allows conversion download between VSQX, MusicXML, and UFDATA.
 
 ## UFDATA API
