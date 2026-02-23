@@ -1,10 +1,13 @@
 import { Format } from "../model/Format";
 import { JapaneseLyricsType } from "../model/JapaneseLyricsType";
+import type { ImportWarning } from "../model/ImportWarning";
 import type { Note } from "../model/Note";
 import type { Project } from "../model/Project";
 import type { Tempo } from "../model/Tempo";
 import type { TimeSignature } from "../model/TimeSignature";
 import type { Track } from "../model/Track";
+
+export const UTAFORMATIX_DATA_VERSION = 1;
 
 interface UfDataNote {
   key: number;
@@ -39,13 +42,40 @@ interface UfDataDocument {
   project: UfDataProject;
 }
 
+export type UfDataDiagnosticCode = "INVALID_JSON" | "MISSING_PROJECT";
+
+export interface UfDataDiagnostic {
+  code: UfDataDiagnosticCode;
+  message: string;
+  path: string;
+}
+
+function parseRawUfData(input: string | object): object {
+  if (typeof input !== "string") return input;
+  return JSON.parse(input) as object;
+}
+
 function asDocument(input: string | object): UfDataDocument {
-  const raw = typeof input === "string" ? (JSON.parse(input) as object) : input;
+  const raw = parseRawUfData(input);
   const document = raw as Partial<UfDataDocument>;
   if (!document.project) {
     throw new Error("Invalid UFDATA: missing project");
   }
   return document as UfDataDocument;
+}
+
+export function collectUfDataDiagnostics(input: string | object): UfDataDiagnostic[] {
+  try {
+    const raw = parseRawUfData(input);
+    const document = raw as Partial<UfDataDocument>;
+    if (!document.project) {
+      return [{ code: "MISSING_PROJECT", message: "Invalid UFDATA: missing project", path: "$.project" }];
+    }
+    return [];
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return [{ code: "INVALID_JSON", message, path: "$" }];
+  }
 }
 
 function parseTrack(index: number, track: UfDataTrack): Track {
@@ -72,6 +102,15 @@ function parseTrack(index: number, track: UfDataTrack): Track {
 
 export function parseUfdata(input: string | object): Project {
   const document = asDocument(input);
+  const importWarnings: ImportWarning[] = [];
+  const formatVersion = document.formatVersion ?? UTAFORMATIX_DATA_VERSION;
+  if (formatVersion > UTAFORMATIX_DATA_VERSION) {
+    importWarnings.push({
+      kind: "IncompatibleFormatSerializationVersion",
+      currentVersion: String(UTAFORMATIX_DATA_VERSION),
+      dataVersion: String(formatVersion),
+    });
+  }
   return {
     format: Format.UfData,
     inputFiles: [],
@@ -81,7 +120,7 @@ export function parseUfdata(input: string | object): Project {
     tempos: document.project.tempos,
     ppq: 480,
     measurePrefix: document.project.measurePrefix,
-    importWarnings: [],
+    importWarnings,
     japaneseLyricsType: JapaneseLyricsType.Unknown,
   };
 }
@@ -112,7 +151,7 @@ export interface WriteUfdataOptions {
 
 export function writeUfdata(project: Project, opts?: WriteUfdataOptions): string {
   const document: UfDataDocument = {
-    formatVersion: opts?.formatVersion,
+    formatVersion: opts?.formatVersion ?? UTAFORMATIX_DATA_VERSION,
     project: {
       name: project.name,
       tracks: project.tracks.map(writeTrack),

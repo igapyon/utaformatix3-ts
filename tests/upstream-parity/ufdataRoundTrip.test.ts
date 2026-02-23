@@ -1,6 +1,11 @@
 declare function require(name: string): any;
 
-import { parseUfdata, writeUfdata } from "../../src/core/io/UfData";
+import {
+  collectUfDataDiagnostics,
+  parseUfdata,
+  UTAFORMATIX_DATA_VERSION,
+  writeUfdata,
+} from "../../src/core/io/UfData";
 
 const fs = require("node:fs");
 
@@ -50,6 +55,69 @@ function testUfdataRoundTrip(): void {
     JSON.stringify(oracleProject.tracks[0].notes) === JSON.stringify(outputProject.tracks[0].notes),
     "notes mismatch",
   );
+  assert((output as Record<string, any>).formatVersion === UTAFORMATIX_DATA_VERSION, "formatVersion mismatch");
+}
+
+function testUfdataVersionWarning(): void {
+  const document = {
+    formatVersion: UTAFORMATIX_DATA_VERSION + 1,
+    project: {
+      name: "version-warning",
+      tracks: [],
+      timeSignatures: [{ measurePosition: 0, numerator: 4, denominator: 4 }],
+      tempos: [{ tickPosition: 0, bpm: 120 }],
+      measurePrefix: 0,
+    },
+  };
+  const project = parseUfdata(document);
+  assert(project.importWarnings.length === 1, "expected one import warning");
+  assert(
+    project.importWarnings[0].kind === "IncompatibleFormatSerializationVersion",
+    "expected incompatible version warning",
+  );
+}
+
+function testUfdataIgnoresExtrasInSemanticCheck(): void {
+  const base = {
+    formatVersion: UTAFORMATIX_DATA_VERSION,
+    project: {
+      name: "with-extras",
+      tracks: [
+        {
+          name: "Track 1",
+          notes: [{ key: 60, lyric: "la", tickOn: 0, tickOff: 480, phoneme: "l a", extras: { x: 1 } }],
+          extras: { trackExtra: true },
+        },
+      ],
+      timeSignatures: [{ measurePosition: 0, numerator: 4, denominator: 4, extras: { a: 1 } }],
+      tempos: [{ tickPosition: 0, bpm: 120, extras: { b: 2 } }],
+      measurePrefix: 0,
+      extras: { projectExtra: true },
+    },
+  };
+
+  const project = parseUfdata(base);
+  const outputText = writeUfdata(project);
+  const outputProject = (JSON.parse(outputText) as Record<string, any>).project;
+
+  // Phase 1-2 rule: semantic checks compare core musical fields and ignore extras.
+  assert(outputProject.tracks[0].notes[0].key === 60, "note key mismatch");
+  assert(outputProject.tracks[0].notes[0].tickOn === 0, "note tickOn mismatch");
+  assert(outputProject.tempos[0].bpm === 120, "tempo mismatch");
+  assert(outputProject.timeSignatures[0].numerator === 4, "timeSignature mismatch");
+}
+
+function testUfdataDiagnostics(): void {
+  const invalidJsonDiagnostics = collectUfDataDiagnostics("{");
+  assert(invalidJsonDiagnostics.length === 1, "expected invalid json diagnostic");
+  assert(invalidJsonDiagnostics[0].code === "INVALID_JSON", "invalid json code mismatch");
+
+  const missingProjectDiagnostics = collectUfDataDiagnostics({ formatVersion: 1 });
+  assert(missingProjectDiagnostics.length === 1, "expected missing project diagnostic");
+  assert(missingProjectDiagnostics[0].code === "MISSING_PROJECT", "missing project code mismatch");
 }
 
 testUfdataRoundTrip();
+testUfdataVersionWarning();
+testUfdataIgnoresExtrasInSemanticCheck();
+testUfdataDiagnostics();
