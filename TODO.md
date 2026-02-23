@@ -136,3 +136,8 @@
 - [x] Phase 2: golden ufdata を少数ケースで先に固定し、実装をそれに合わせる
 - [x] Phase 3: VSQX は機能追加ごとに「ZIP構造比較 + UFDATA意味比較」の二層テストを追加する
 - [x] Phase 4: MusicXML preserve は最初に no-op diff 0 テストを追加し、以後の変更をガードする
+
+## 追加済み回帰テスト
+
+- [x] VSQX parse: VSQ3タグ・prefix補正・defaultLyric 補完（`tests/upstream-parity/vsqxParse.test.ts`）
+- [x] MusicXML parse: 休符スキップ・複数小節・テンポ抽出（`tests/upstream-parity/musicXmlParse.test.ts`）
