@@ -33,3 +33,38 @@ export { needWarningZoom, zoomProject, projectZoomFactorOptions } from "./core/p
 export { simplifyShape, simplifyShapeTo } from "./core/process/RdpSimplification";
 export { resampled, dotResampled } from "./core/process/Resampling";
 export { milliSecFromTick } from "./core/process/pitch/TimeUnitConversion";
+export { type CevioTrackPitchData, pitchFromCevioTrack, generateForCevio, cevioTrackPitchDataLength } from "./core/process/pitch/CevioPitchConversion";
+export { type DvSegmentPitchRawData, type DvNoteWithPitch, pitchFromDvTrack, generateForDv } from "./core/process/pitch/DeepVocalPitchConversion";
+export {
+  type OpenUtauPartPitchData,
+  type OpenUtauNotePitchData,
+  OpenUtauPitchShape,
+  pitchFromUstxPart,
+  mergePitchFromUstxParts,
+  reduceRepeatedPitchPointsFromUstxTrack,
+  toOpenUtauPitchData,
+} from "./core/process/pitch/OpenUtauPitchConversion";
+export {
+  type SvpDefaultVibratoParameters,
+  type SvpNoteWithVibrato,
+  processSvpInputPitchData,
+  appendPitchPointsForSvpOutput,
+} from "./core/process/pitch/SynthVPitchConversion";
+export {
+  type UtauMode1TrackPitchData,
+  type UtauMode1NotePitchData,
+  pitchFromUtauMode1Track,
+  pitchToUtauMode1Track,
+} from "./core/process/pitch/UtauMode1PitchConversion";
+export {
+  type UtauMode2TrackPitchData,
+  type UtauMode2NotePitchData,
+  pitchToUtauMode2Track,
+  pitchFromUtauMode2Track,
+} from "./core/process/pitch/UtauMode2PitchConversion";
+export { type UtauNoteVibratoParams, appendUtauNoteVibrato } from "./core/process/pitch/UtauVibratoConversion";
+export { LyricsMappingRequest, mapLyrics } from "./core/process/lyrics/LyricsMapping";
+export { convertChineseLyricsToPinyin } from "./core/process/lyrics/chinese/Conversion";
+export { analyseJapaneseLyricsTypeForProject } from "./core/process/lyrics/japanese/Analysis";
+export { cleanupJapaneseLyrics } from "./core/process/lyrics/japanese/Cleanup";
+export { convertJapaneseLyrics } from "./core/process/lyrics/japanese/Conversion";

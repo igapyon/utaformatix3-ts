@@ -117,6 +117,12 @@
 - [x] no-op で入力テキスト完全一致（diff 0）を実装
 - [x] 変更ありケースの XML/UFDATA 比較テストを追加
 
+## 4.5. 追加フォーマット候補（スコープ拡張時）
+
+- [ ] `MID` の parse/write 方針を決める（`upstream/core/io/Mid.kt`）
+- [ ] `MID` の MVP写経（tempo/timeSignature/note）を実装する
+- [ ] `MID` round-trip テストを追加する
+
 ## 5. 追従タスク（upstream更新ごと）
 
 - [x] `./scripts/sync-upstream.sh <ref>` を実行
@@ -146,6 +152,8 @@
 - [x] MusicXML parse: tie start/stop 結合（`tests/upstream-parity/musicXmlParse.test.ts`）
 - [x] MusicXML generate: tempo direction/metronome + tie/notations + syllabic（`tests/upstream-parity/musicXmlGenerateDetails.test.ts`）
 - [x] core/process 基礎写経: Eval/Interpolation/LengthLimit/Resampling/RDP/Zoom/TimeUnit（`tests/upstream-parity/processCoreParity.test.ts`）
+- [x] core/process lyrics 写経: Mapping/JP分析・清掃・変換/CN変換（`tests/upstream-parity/lyricsMappingAndJapanese.test.ts`）
+- [x] core/process pitch 写経: CeVIO/DeepVocal/OpenUtau/SynthV/UtauMode1/UtauMode2/Vibrato（`tests/upstream-parity/pitchConversionsSmoke.test.ts`）
 - [x] upstream jsTest parity: `TickTimeTransformerTest.kt` 写経（`tests/upstream-parity/tickTimeTransformer.test.ts`）
 - [x] upstream jsTest parity: `PitchCalculationTest.kt` 写経（`tests/upstream-parity/pitchCalculation.test.ts`）
 - [x] upstream jsTest parity: `LyricsReplacementTest.kt` 写経（`tests/upstream-parity/lyricsReplacement.test.ts`）
