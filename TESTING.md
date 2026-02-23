@@ -71,6 +71,13 @@ fixtures は手動編集しません。
 - トラック構造
 - extras は段階導入（初期は比較対象外でも可）
 
+写経強化の実装ポイント（upstream準拠）:
+
+- `parseUfdataDocument` / `generateUfdataDocument` の document API を提供
+- `parseUfdata(..., { simpleImport: true })` で pitch を非読込にできる
+- parse時に `validateNotes` 相当のノート整形を適用
+- write時に `includePitch: false` でも空 pitch 構造（`ticks/values/isAbsolute`）を保持
+
 ### 2.2 VSQX（ZIP）
 
 VSQX はバイナリ一致を要求しません。

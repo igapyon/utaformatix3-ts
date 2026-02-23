@@ -43,3 +43,64 @@ function testParseVsq3WithPrefixAndDefaultLyric(): void {
 }
 
 testParseVsq3WithPrefixAndDefaultLyric();
+
+function testParseVsqxWarningsForMissingTempoAndTimeSignature(): void {
+  const sourceXml =
+    '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<vsq4 xmlns="http://www.yamaha.co.jp/vocaloid/schema/vsq4/">' +
+    "<masterTrack>" +
+    "<preMeasure>0</preMeasure>" +
+    "</masterTrack>" +
+    "<vsTrack>" +
+    "<tNo>0</tNo>" +
+    "<name>Track 1</name>" +
+    "<vsPart>" +
+    "<t>0</t>" +
+    "<playTime>480</playTime>" +
+    "<note><t>0</t><dur>480</dur><n>60</n><y>la</y></note>" +
+    "</vsPart>" +
+    "</vsTrack>" +
+    "</vsq4>";
+
+  const project = parseVsqx(sourceXml, { defaultLyric: "あ" });
+
+  assert(
+    project.importWarnings.some((warning) => warning.kind === "TimeSignatureNotFound"),
+    "missing TimeSignatureNotFound warning",
+  );
+  assert(
+    project.importWarnings.some((warning) => warning.kind === "TempoNotFound"),
+    "missing TempoNotFound warning",
+  );
+}
+
+testParseVsqxWarningsForMissingTempoAndTimeSignature();
+
+function testParseVsqxPitchFromControls(): void {
+  const sourceXml =
+    '<?xml version="1.0" encoding="UTF-8"?>' +
+    '<vsq4 xmlns="http://www.yamaha.co.jp/vocaloid/schema/vsq4/">' +
+    "<masterTrack>" +
+    "<preMeasure>0</preMeasure>" +
+    "<timeSig><m>0</m><nu>4</nu><de>4</de></timeSig>" +
+    "<tempo><t>0</t><v>12000</v></tempo>" +
+    "</masterTrack>" +
+    "<vsTrack>" +
+    "<tNo>0</tNo>" +
+    "<name>Track 1</name>" +
+    "<vsPart>" +
+    "<t>0</t>" +
+    "<playTime>480</playTime>" +
+    '<cc><t>1</t><v id="S">2</v></cc>' +
+    '<cc><t>0</t><v id="P">100</v></cc>' +
+    "<note><t>0</t><dur>480</dur><n>60</n><y>la</y></note>" +
+    "</vsPart>" +
+    "</vsTrack>" +
+    "</vsq4>";
+
+  const project = parseVsqx(sourceXml, { defaultLyric: "あ" });
+  assert(project.tracks[0].pitch != null, "pitch should be parsed from control events");
+  assert((project.tracks[0].pitch?.data.length ?? 0) > 0, "parsed pitch data should not be empty");
+}
+
+testParseVsqxPitchFromControls();

@@ -4,54 +4,181 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>utaformatix3-ts playground</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 24px;
+        line-height: 1.5;
+      }
+      main {
+        max-width: 900px;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin: 8px 0;
+      }
+      label {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      select,
+      input[type="file"],
+      button {
+        padding: 6px 8px;
+      }
+      #status {
+        font-weight: 600;
+      }
+      #error {
+        color: #b00020;
+        white-space: pre-wrap;
+      }
+      #outputPreview {
+        background: #f6f8fa;
+        border: 1px solid #d0d7de;
+        padding: 12px;
+        overflow: auto;
+        max-height: 280px;
+      }
+    </style>
   </head>
   <body>
     <main>
       <h1>utaformatix3-ts playground</h1>
       <p id="status">Loading IIFE...</p>
-      <pre id="result"></pre>
+      <p>
+        If IIFE is not loaded, build distribution first:
+        <code>npm install</code> -> <code>npm run build:lib</code>
+      </p>
+
+      <div class="row">
+        <label>
+          Input format
+          <select id="inputFormat">
+            <option value="vsqx">VSQX</option>
+            <option value="musicxml">MusicXML</option>
+            <option value="ufdata">UFDATA</option>
+          </select>
+        </label>
+        <label>
+          Output format
+          <select id="outputFormat">
+            <option value="vsqx">VSQX</option>
+            <option value="musicxml">MusicXML</option>
+            <option value="ufdata">UFDATA</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="row">
+        <label>
+          Input file
+          <input id="inputFile" type="file" />
+        </label>
+      </div>
+
+      <div class="row">
+        <button id="convertButton" type="button">Convert</button>
+        <button id="downloadButton" type="button" disabled>Download Output</button>
+      </div>
+
+      <p id="error"></p>
+      <pre id="outputPreview"></pre>
     </main>
 
     <script src="./dist-lib/utaformatix3-ts.iife.js"></script>
     <script>
       (function () {
         const status = document.getElementById("status");
-        const result = document.getElementById("result");
-        if (!status || !result) return;
-
-        const api = window.Utaformatix3Ts;
-        if (!api) {
-          status.textContent = "IIFE not loaded: window.Utaformatix3Ts is undefined.";
+        const error = document.getElementById("error");
+        const outputPreview = document.getElementById("outputPreview");
+        const inputFormat = document.getElementById("inputFormat");
+        const outputFormat = document.getElementById("outputFormat");
+        const inputFile = document.getElementById("inputFile");
+        const convertButton = document.getElementById("convertButton");
+        const downloadButton = document.getElementById("downloadButton");
+        if (
+          !status ||
+          !error ||
+          !outputPreview ||
+          !inputFormat ||
+          !outputFormat ||
+          !inputFile ||
+          !convertButton ||
+          !downloadButton
+        ) {
           return;
         }
 
-        status.textContent = "IIFE loaded.";
-        const sample = {
-          formatVersion: 1,
-          project: {
-            name: "playground",
-            tracks: [
-              {
-                name: "Track 1",
-                notes: [{ key: 60, lyric: "la", tickOn: 0, tickOff: 480, phoneme: "l a" }],
-              },
-            ],
-            timeSignatures: [{ measurePosition: 0, numerator: 4, denominator: 4 }],
-            tempos: [{ tickPosition: 0, bpm: 120 }],
-            measurePrefix: 0,
-          },
-        };
+        const api = window.Utaformatix3Ts;
+        if (!api) {
+          status.textContent = "IIFE not loaded: window.Utaformatix3Ts is undefined. Run npm run build:lib first.";
+          return;
+        }
 
-        const project = api.parseUfdata(sample);
-        result.textContent = JSON.stringify(
-          {
-            format: project.format,
-            trackCount: project.tracks.length,
-            firstLyric: project.tracks[0]?.notes[0]?.lyric ?? null,
-          },
-          null,
-          2,
-        );
+        status.textContent = "IIFE loaded. Select file and formats, then click Convert.";
+
+        let latestOutputText = "";
+        let latestOutputExt = "txt";
+
+        function parseProject(text, format) {
+          if (format === "vsqx") return api.parseVsqx(text, { defaultLyric: "あ" });
+          if (format === "musicxml") return api.parseMusicXml(text, { defaultLyric: "あ" });
+          if (format === "ufdata") return api.parseUfdata(text);
+          throw new Error("Unsupported input format: " + format);
+        }
+
+        function writeProject(project, format) {
+          if (format === "vsqx") return { text: api.writeVsqx(project).content, ext: "vsqx" };
+          if (format === "musicxml") return { text: api.writeMusicXml(project, { mode: "generate" }), ext: "musicxml" };
+          if (format === "ufdata") return { text: api.writeUfdata(project), ext: "ufdata.json" };
+          throw new Error("Unsupported output format: " + format);
+        }
+
+        convertButton.addEventListener("click", async function () {
+          error.textContent = "";
+          outputPreview.textContent = "";
+          latestOutputText = "";
+          latestOutputExt = "txt";
+          downloadButton.disabled = true;
+
+          const file = inputFile.files && inputFile.files[0];
+          if (!file) {
+            error.textContent = "Input file is not selected.";
+            return;
+          }
+          try {
+            const inputText = await file.text();
+            const project = parseProject(inputText, inputFormat.value);
+            const output = writeProject(project, outputFormat.value);
+            latestOutputText = output.text;
+            latestOutputExt = output.ext;
+            outputPreview.textContent = output.text.slice(0, 20000);
+            downloadButton.disabled = false;
+            status.textContent =
+              "Converted: " + inputFormat.value + " -> " + outputFormat.value + " / tracks=" + project.tracks.length;
+          } catch (e) {
+            const message = e instanceof Error ? e.message : String(e);
+            error.textContent = "Convert failed:\n" + message;
+            status.textContent = "Convert failed.";
+          }
+        });
+
+        downloadButton.addEventListener("click", function () {
+          if (!latestOutputText) return;
+          const blob = new Blob([latestOutputText], { type: "text/plain;charset=utf-8" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "converted." + latestOutputExt;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        });
       })();
     </script>
   </body>

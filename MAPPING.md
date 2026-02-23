@@ -66,8 +66,9 @@
 | `upstream/utaformatix/core/src/main/kotlin/core/util/EncodingUtil.kt` | `src/core/util/EncodingUtil.ts` | in_progress | encode/decode helper を写経 |
 | `upstream/utaformatix/core/src/main/kotlin/core/external/Encoding.kt` | `src/core/external/Encoding.ts` | in_progress | external wrapper を最小導入 |
 | `upstream/utaformatix/core/src/main/kotlin/core/io/UfData.kt` | `src/core/io/UfData.ts` | in_progress | parse/write + version warning + diagnostics 形式を実装 |
-| `upstream/utaformatix/core/src/main/kotlin/core/io/Vsqx.kt` | `src/core/io/Vsqx.ts` | in_progress | VSQX MVP parse/write + extras.vsqx + round-trip/semantic テスト追加 |
-| `upstream/utaformatix/core/src/main/kotlin/core/io/MusicXml.kt` | `src/core/io/MusicXml.ts` | in_progress | generate/preserve(no-op diff 0) + semantic 比較テスト追加 |
+| `upstream/utaformatix/core/src/main/kotlin/core/io/Vsqx.kt` | `src/core/io/Vsqx.ts` | in_progress | VSQX parse/write + PIT/PBS control 対応 + round-trip/semantic テスト追加 |
+| `upstream/utaformatix/core/src/main/kotlin/core/io/MusicXml.kt` | `src/core/io/MusicXml.ts` | in_progress | generate/preserve(no-op diff 0) + tie 結合/notations/direction 出力の parity 強化 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/VocaloidPartPitchData.kt` | `src/core/process/pitch/VocaloidPitchConversion.ts` | in_progress | VSQX PIT/PBS <-> internal pitch 変換を導入 |
 | `upstream/utaformatix/src/jsTest/kotlin/process/pitch/TickTimeTransformerTest.kt` | `tests/upstream-parity/tickTimeTransformer.test.ts` | verified | upstream jsTest parity 済み |
 | `upstream/utaformatix/src/jsTest/kotlin/process/pitch/PitchCalculationTest.kt` | `tests/upstream-parity/pitchCalculation.test.ts` | verified | upstream jsTest parity 済み |
 | `upstream/utaformatix/src/jsTest/kotlin/process/lyrics/LyricsReplacementTest.kt` | `tests/upstream-parity/lyricsReplacement.test.ts` | verified | upstream jsTest parity 済み |

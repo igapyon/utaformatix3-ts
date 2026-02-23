@@ -134,6 +134,21 @@ Quick check:
 - Open `playground.html` in a browser after `npm run build:lib`.
 - It loads `dist-lib/utaformatix3-ts.iife.js` and shows a minimal API call result.
 
+## UFDATA API
+
+UFDATA conversion provides both text/object entry points and document-level APIs.
+
+- `parseUfdata(input, options?)`
+- `writeUfdata(project, options?)`
+- `parseUfdataDocument(document, options?)`
+- `generateUfdataDocument(project, options?)`
+
+Main options:
+
+- `parseUfdata(..., { simpleImport: true })`: skip pitch import (upstream-compatible behavior)
+- `parseUfdataDocument(..., { inputFiles })`: keep source file context in `Project.inputFiles`
+- `writeUfdata(..., { includePitch: false })`: generate UFDATA with empty pitch payloads
+
 ---
 
 # プロジェクト理念（Project Philosophy）

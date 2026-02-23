@@ -140,7 +140,11 @@
 ## 追加済み回帰テスト
 
 - [x] VSQX parse: VSQ3タグ・prefix補正・defaultLyric 補完（`tests/upstream-parity/vsqxParse.test.ts`）
+- [x] VSQX parse: PIT/PBS コントロールイベントから pitch 復元（`tests/upstream-parity/vsqxParse.test.ts`）
+- [x] VSQX write: PIT/PBS コントロールイベント出力（`tests/upstream-parity/vsqxWrite.test.ts`）
 - [x] MusicXML parse: 休符スキップ・複数小節・テンポ抽出（`tests/upstream-parity/musicXmlParse.test.ts`）
+- [x] MusicXML parse: tie start/stop 結合（`tests/upstream-parity/musicXmlParse.test.ts`）
+- [x] MusicXML generate: tempo direction/metronome + tie/notations + syllabic（`tests/upstream-parity/musicXmlGenerateDetails.test.ts`）
 - [x] upstream jsTest parity: `TickTimeTransformerTest.kt` 写経（`tests/upstream-parity/tickTimeTransformer.test.ts`）
 - [x] upstream jsTest parity: `PitchCalculationTest.kt` 写経（`tests/upstream-parity/pitchCalculation.test.ts`）
 - [x] upstream jsTest parity: `LyricsReplacementTest.kt` 写経（`tests/upstream-parity/lyricsReplacement.test.ts`）

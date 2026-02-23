@@ -7,6 +7,13 @@ import { TickCounter } from "../model/TickCounter";
 import type { TimeSignature } from "../model/TimeSignature";
 import type { Track } from "../model/Track";
 import type { ExportNotification } from "../model/ExportNotification";
+import { validateTrackNotes } from "../process/NoteShaping";
+import type { ImportWarning } from "../model/ImportWarning";
+import {
+  generateForVocaloid,
+  pitchFromVocaloidParts,
+  type VocaloidPartPitchData,
+} from "../process/pitch/VocaloidPitchConversion";
 
 const BPM_RATE = 100.0;
 const MIN_MEASURE_OFFSET = 1;
@@ -39,6 +46,11 @@ type TagNames = {
   xSampa: string;
   trackNum: string;
   playTime: string;
+  mCtrl: string;
+  attr: string;
+  id: string;
+  pbsName: string;
+  pitName: string;
 };
 
 const TAG_NAMES_VSQ4: TagNames = {
@@ -61,6 +73,11 @@ const TAG_NAMES_VSQ4: TagNames = {
   xSampa: "p",
   trackNum: "tNo",
   playTime: "playTime",
+  mCtrl: "cc",
+  attr: "v",
+  id: "id",
+  pbsName: "S",
+  pitName: "P",
 };
 
 const TAG_NAMES_VSQ3: TagNames = {
@@ -83,6 +100,11 @@ const TAG_NAMES_VSQ3: TagNames = {
   xSampa: "phnms",
   trackNum: "vsTrackNo",
   playTime: "playTime",
+  mCtrl: "mCtrl",
+  attr: "attr",
+  id: "id",
+  pbsName: "PBS",
+  pitName: "PIT",
 };
 
 function detectVsqxSchemaVersion(text: string): VsqxSchemaVersion {
@@ -129,6 +151,7 @@ function parseTimeSignatures(
   masterTrack: Element,
   tags: TagNames,
   measurePrefix: number,
+  warnings: ImportWarning[],
 ): { tickPrefix: number; timeSignatures: TimeSignature[] } {
   const raw = Array.from(masterTrack.getElementsByTagName(tags.timeSig))
     .map((node) => {
@@ -147,6 +170,9 @@ function parseTimeSignatures(
     .filter((it): it is TimeSignature => it !== null);
 
   const timeSignatures = raw.length > 0 ? raw : [{ measurePosition: 0, numerator: 4, denominator: 4 }];
+  if (raw.length === 0) {
+    warnings.push({ kind: "TimeSignatureNotFound" });
+  }
   const tickPrefix = getTickPrefix(timeSignatures, measurePrefix);
 
   const adjusted = timeSignatures.map((it) => ({
@@ -161,7 +187,7 @@ function parseTimeSignatures(
   return { tickPrefix, timeSignatures: result };
 }
 
-function parseTempos(masterTrack: Element, tags: TagNames, tickPrefix: number): Tempo[] {
+function parseTempos(masterTrack: Element, tags: TagNames, tickPrefix: number, warnings: ImportWarning[]): Tempo[] {
   const raw = Array.from(masterTrack.getElementsByTagName(tags.tempo))
     .map((node) => {
       const tickPosition = Number(elementText(node, tags.posTick));
@@ -172,6 +198,9 @@ function parseTempos(masterTrack: Element, tags: TagNames, tickPrefix: number): 
     .filter((it): it is Tempo => it !== null);
 
   const tempos = raw.length > 0 ? raw : [{ tickPosition: 0, bpm: 120 }];
+  if (raw.length === 0) {
+    warnings.push({ kind: "TempoNotFound" });
+  }
   const lastInsidePrefixIndex = tempos.reduce((acc, it, index) => (it.tickPosition <= 0 ? index : acc), 0);
   const result = tempos.slice(lastInsidePrefixIndex);
   if (result.length > 0) {
@@ -185,7 +214,7 @@ function parseTrack(
   id: number,
   tags: TagNames,
   tickPrefix: number,
-  defaultLyric: string,
+  options: ParseVsqxOptions,
 ): Track {
   const name = elementText(trackNode, tags.trackName) ?? `Track ${id + 1}`;
   const partNodes = Array.from(trackNode.getElementsByTagName(tags.musicalPart));
@@ -200,7 +229,7 @@ function parseTrack(
       const key = Number(elementText(noteNode, tags.noteNum) ?? "0");
       const tickOnBase = Number(elementText(noteNode, tags.posTick) ?? "0");
       const length = Number(elementText(noteNode, tags.duration) ?? "0");
-      const lyric = elementText(noteNode, tags.lyric) ?? defaultLyric;
+      const lyric = elementText(noteNode, tags.lyric) ?? options.defaultLyric ?? "あ";
       const phoneme = elementText(noteNode, tags.xSampa);
       return {
         id: index,
@@ -212,11 +241,40 @@ function parseTrack(
       };
     });
 
-  return { id, name, notes, pitch: null };
+  let pitch = null;
+  if (!options.simpleImport) {
+    const pitchByParts: VocaloidPartPitchData[] = partNodes.map((partNode) => {
+      const tickOffset = Number(elementText(partNode, tags.posTick) ?? "0") - tickPrefix;
+      const controlNodes = Array.from(partNode.getElementsByTagName(tags.mCtrl));
+      const pbs = controlNodes
+        .filter((node) => firstElementByTagName(node, tags.attr)?.getAttribute(tags.id) === tags.pbsName)
+        .map((node) => ({
+          pos: Number(elementText(node, tags.posTick) ?? "0"),
+          value: Number(firstElementByTagName(node, tags.attr)?.textContent?.trim() ?? "0"),
+        }))
+        .filter((it) => Number.isFinite(it.pos) && Number.isFinite(it.value));
+      const pit = controlNodes
+        .filter((node) => firstElementByTagName(node, tags.attr)?.getAttribute(tags.id) === tags.pitName)
+        .map((node) => ({
+          pos: Number(elementText(node, tags.posTick) ?? "0"),
+          value: Number(firstElementByTagName(node, tags.attr)?.textContent?.trim() ?? "0"),
+        }))
+        .filter((it) => Number.isFinite(it.pos) && Number.isFinite(it.value));
+      return {
+        startPos: tickOffset,
+        pit,
+        pbs,
+      };
+    });
+    pitch = pitchFromVocaloidParts(pitchByParts);
+  }
+
+  return validateTrackNotes({ id, name, notes, pitch });
 }
 
 export interface ParseVsqxOptions {
   defaultLyric?: string;
+  simpleImport?: boolean;
 }
 
 function parseVsqxWithDom(text: string, options?: ParseVsqxOptions): Project {
@@ -233,11 +291,12 @@ function parseVsqxWithDom(text: string, options?: ParseVsqxOptions): Project {
     throw new Error("VSQX masterTrack not found");
   }
 
+  const warnings: ImportWarning[] = [];
   const measurePrefix = Number(elementText(masterTrack, tags.preMeasure) ?? "0");
-  const { tickPrefix, timeSignatures } = parseTimeSignatures(masterTrack, tags, measurePrefix);
-  const tempos = parseTempos(masterTrack, tags, tickPrefix);
+  const { tickPrefix, timeSignatures } = parseTimeSignatures(masterTrack, tags, measurePrefix, warnings);
+  const tempos = parseTempos(masterTrack, tags, tickPrefix, warnings);
   const tracks = Array.from(root.getElementsByTagName(tags.vsTrack)).map((node, index) =>
-    parseTrack(node, index, tags, tickPrefix, options?.defaultLyric ?? "あ"),
+    parseTrack(node, index, tags, tickPrefix, options ?? {}),
   );
 
   return {
@@ -249,7 +308,7 @@ function parseVsqxWithDom(text: string, options?: ParseVsqxOptions): Project {
     tempos,
     ppq: 480,
     measurePrefix,
-    importWarnings: [],
+    importWarnings: warnings,
     japaneseLyricsType: JapaneseLyricsType.Unknown,
     extras: {
       vsqx: {
@@ -272,6 +331,29 @@ function extractTagBlocks(source: string, tag: string): string[] {
   );
 }
 
+function extractControlEvents(partBlock: string, tags: TagNames, expectedName: string): Array<{ pos: number; value: number }> {
+  return extractTagBlocks(partBlock, tags.mCtrl)
+    .map((controlBlock) => {
+      const pos = Number(extractFirstTagValue(controlBlock, tags.posTick) ?? "0");
+      const attrMatch = controlBlock.match(
+        new RegExp(`<${tags.attr}\\s+${tags.id}="([^"]+)">([\\s\\S]*?)</${tags.attr}>`),
+      );
+      if (!attrMatch) {
+        return null;
+      }
+      const name = attrMatch[1];
+      if (name !== expectedName) {
+        return null;
+      }
+      const value = Number(decodeXml(attrMatch[2]).trim());
+      if (!Number.isFinite(pos) || !Number.isFinite(value)) {
+        return null;
+      }
+      return { pos, value };
+    })
+    .filter((it): it is { pos: number; value: number } => it !== null);
+}
+
 function parseVsqxWithoutDom(text: string, options?: ParseVsqxOptions): Project {
   const schemaVersion = detectVsqxSchemaVersion(text);
   const tags = getTagNames(schemaVersion);
@@ -279,6 +361,7 @@ function parseVsqxWithoutDom(text: string, options?: ParseVsqxOptions): Project 
   if (!masterTrackMatch) throw new Error("VSQX masterTrack not found");
   const masterTrack = masterTrackMatch[1];
 
+  const warnings: ImportWarning[] = [];
   const measurePrefix = Number(extractFirstTagValue(masterTrack, tags.preMeasure) ?? "0");
 
   const rawTimeSignatures = extractTagBlocks(masterTrack, tags.timeSig)
@@ -298,6 +381,9 @@ function parseVsqxWithoutDom(text: string, options?: ParseVsqxOptions): Project 
     .filter((it): it is TimeSignature => it !== null);
   const timeSignaturesBase =
     rawTimeSignatures.length > 0 ? rawTimeSignatures : [{ measurePosition: 0, numerator: 4, denominator: 4 }];
+  if (rawTimeSignatures.length === 0) {
+    warnings.push({ kind: "TimeSignatureNotFound" });
+  }
   const tickPrefix = getTickPrefix(timeSignaturesBase, measurePrefix);
   const timeSignaturesAdjusted = timeSignaturesBase.map((it) => ({
     ...it,
@@ -319,6 +405,9 @@ function parseVsqxWithoutDom(text: string, options?: ParseVsqxOptions): Project 
     })
     .filter((it): it is Tempo => it !== null);
   const temposRaw = temposBase.length > 0 ? temposBase : [{ tickPosition: 0, bpm: 120 }];
+  if (temposBase.length === 0) {
+    warnings.push({ kind: "TempoNotFound" });
+  }
   const tempos = temposRaw.slice(temposRaw.reduce((acc, it, index) => (it.tickPosition <= 0 ? index : acc), 0));
   if (tempos.length > 0) {
     tempos[0] = { ...tempos[0], tickPosition: 0 };
@@ -349,12 +438,22 @@ function parseVsqxWithoutDom(text: string, options?: ParseVsqxOptions): Project 
           phoneme,
         };
       });
-    return {
+    let pitch = null;
+    if (!options?.simpleImport) {
+      const pitchByParts: VocaloidPartPitchData[] = partBlocks.map((partBlock) => {
+        const tickOffset = Number(extractFirstTagValue(partBlock, tags.posTick) ?? "0") - tickPrefix;
+        const pbs = extractControlEvents(partBlock, tags, tags.pbsName);
+        const pit = extractControlEvents(partBlock, tags, tags.pitName);
+        return { startPos: tickOffset, pit, pbs };
+      });
+      pitch = pitchFromVocaloidParts(pitchByParts);
+    }
+    return validateTrackNotes({
       id: trackIndex,
       name,
       notes,
-      pitch: null,
-    } as Track;
+      pitch,
+    } as Track);
   });
 
   return {
@@ -366,7 +465,7 @@ function parseVsqxWithoutDom(text: string, options?: ParseVsqxOptions): Project 
     tempos,
     ppq: 480,
     measurePrefix,
-    importWarnings: [],
+    importWarnings: warnings,
     japaneseLyricsType: JapaneseLyricsType.Unknown,
     extras: {
       vsqx: {
@@ -399,6 +498,17 @@ function generateTrackXml(track: Track, trackIndex: number, tickPrefix: number):
     return `<vsTrack><tNo>${trackIndex}</tNo><name>${escapeXml(track.name)}</name></vsTrack>`;
   }
   const playTime = track.notes[track.notes.length - 1].tickOff;
+  const singerXml = "<singer><t>0</t><bs>0</bs><pc>0</pc></singer>";
+  const pitchRawData = track.pitch ? generateForVocaloid(track.pitch, track.notes) : null;
+  const controlsWithName = pitchRawData
+    ? [
+        ...pitchRawData.pbs.map((event) => ({ event, name: "S" })),
+        ...pitchRawData.pit.map((event) => ({ event, name: "P" })),
+      ].sort((a, b) => a.event.pos - b.event.pos)
+    : [];
+  const controlsXml = controlsWithName
+    .map(({ event, name }) => `<cc><t>${event.pos}</t><v id="${name}">${event.value}</v></cc>`)
+    .join("");
   const notesXml = track.notes
     .map((note) => {
       const lyric = escapeXml(note.lyric);
@@ -418,12 +528,32 @@ function generateTrackXml(track: Track, trackIndex: number, tickPrefix: number):
     "<vsTrack>",
     `<tNo>${trackIndex}</tNo>`,
     `<name>${escapeXml(track.name)}</name>`,
+    "<comment><![CDATA[Track]]></comment>",
     "<vsPart>",
     `<t>${tickPrefix}</t>`,
     `<playTime>${playTime}</playTime>`,
+    "<name><![CDATA[NewPart]]></name>",
+    "<comment><![CDATA[New Musical Part]]></comment>",
+    singerXml,
+    controlsXml,
     notesXml,
     "</vsPart>",
     "</vsTrack>",
+  ].join("");
+}
+
+function generateVsUnitXml(trackIndex: number): string {
+  return [
+    "<vsUnit>",
+    `<tNo>${trackIndex}</tNo>`,
+    "<iGin>0</iGin>",
+    "<sLvl>-898</sLvl>",
+    "<sEnable>0</sEnable>",
+    "<m>0</m>",
+    "<s>0</s>",
+    "<pan>64</pan>",
+    "<vol>0</vol>",
+    "</vsUnit>",
   ].join("");
 }
 
@@ -460,16 +590,44 @@ export function writeVsqx(project: Project, options?: WriteVsqxOptions): WriteVs
   const tracksXml = project.tracks
     .map((track, index) => generateTrackXml(track, index, tickPrefix))
     .join("");
+  const unitsXml = project.tracks.map((_, index) => generateVsUnitXml(index)).join("");
+
+  const vVoiceTableXml = [
+    "<vVoiceTable>",
+    "<vVoice>",
+    "<bs>0</bs>",
+    "<pc>0</pc>",
+    "<id><![CDATA[BCXDC6CZLSZHZCB4]]></id>",
+    "<name><![CDATA[VY2V3]]></name>",
+    "<vPrm><bre>0</bre><bri>0</bri><cle>0</cle><gen>0</gen><ope>0</ope></vPrm>",
+    "</vVoice>",
+    "</vVoiceTable>",
+  ].join("");
 
   const content = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<vsq4 xmlns="http://www.yamaha.co.jp/vocaloid/schema/vsq4/">',
+    "<vender><![CDATA[Yamaha corporation]]></vender>",
+    "<version><![CDATA[4.0.0.3]]></version>",
+    vVoiceTableXml,
+    "<mixer>",
+    "<masterUnit><oDev>0</oDev><rLvl>0</rLvl><vol>0</vol></masterUnit>",
+    unitsXml,
+    "<monoUnit><iGin>0</iGin><sLvl>-898</sLvl><sEnable>0</sEnable><m>0</m><s>0</s><pan>64</pan><vol>0</vol></monoUnit>",
+    "<stUnit><iGin>0</iGin><m>0</m><s>0</s><vol>-129</vol></stUnit>",
+    "</mixer>",
     "<masterTrack>",
+    "<seqName><![CDATA[Untitled0]]></seqName>",
+    "<comment><![CDATA[New VSQ File]]></comment>",
+    "<resolution>480</resolution>",
     `<preMeasure>${measurePrefix}</preMeasure>`,
     timeSignatures,
     tempos,
     "</masterTrack>",
     tracksXml,
+    "<monoTrack></monoTrack>",
+    "<stTrack></stTrack>",
+    "<aux><id><![CDATA[AUX_VST_HOST_CHUNK_INFO]]></id><content><![CDATA[VlNDSwAAAAADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=]]></content></aux>",
     "</vsq4>",
   ].join("");
 

@@ -6,10 +6,11 @@ import type { Project } from "../model/Project";
 import type { Tempo } from "../model/Tempo";
 import type { TimeSignature } from "../model/TimeSignature";
 import type { Track } from "../model/Track";
+import { validateTrackNotes } from "../process/NoteShaping";
 
 export const UTAFORMATIX_DATA_VERSION = 1;
 
-interface UfDataNote {
+export interface UfDataNote {
   key: number;
   lyric: string;
   tickOn: number;
@@ -17,19 +18,19 @@ interface UfDataNote {
   phoneme?: string | null;
 }
 
-interface UfDataPitch {
+export interface UfDataPitch {
   ticks: number[];
   values: Array<number | null>;
   isAbsolute?: boolean;
 }
 
-interface UfDataTrack {
+export interface UfDataTrack {
   name: string;
   notes: UfDataNote[];
-  pitch?: UfDataPitch;
+  pitch: UfDataPitch;
 }
 
-interface UfDataProject {
+export interface UfDataProject {
   name: string;
   tracks: UfDataTrack[];
   timeSignatures: TimeSignature[];
@@ -37,7 +38,7 @@ interface UfDataProject {
   measurePrefix: number;
 }
 
-interface UfDataDocument {
+export interface UfDataDocument {
   formatVersion?: number;
   project: UfDataProject;
 }
@@ -78,7 +79,7 @@ export function collectUfDataDiagnostics(input: string | object): UfDataDiagnost
   }
 }
 
-function parseTrack(index: number, track: UfDataTrack): Track {
+function parseTrack(index: number, track: UfDataTrack, simpleImport: boolean): Track {
   const notes: Note[] = track.notes.map((note, noteIndex) => ({
     id: noteIndex,
     key: note.key,
@@ -87,21 +88,28 @@ function parseTrack(index: number, track: UfDataTrack): Track {
     tickOff: note.tickOff,
     phoneme: note.phoneme,
   }));
-  return {
+  const parsedTrack: Track = {
     id: index,
     name: track.name,
     notes,
-    pitch: track.pitch
+    pitch: simpleImport
+      ? null
+      : track.pitch
       ? {
           data: track.pitch.ticks.map((tick, i) => [tick, track.pitch?.values[i] ?? null]),
           isAbsolute: track.pitch.isAbsolute ?? false,
         }
       : null,
   };
+  return validateTrackNotes(parsedTrack);
 }
 
-export function parseUfdata(input: string | object): Project {
-  const document = asDocument(input);
+export interface ParseUfdataOptions {
+  simpleImport?: boolean;
+  inputFiles?: unknown[];
+}
+
+export function parseUfdataDocument(document: UfDataDocument, options?: ParseUfdataOptions): Project {
   const importWarnings: ImportWarning[] = [];
   const formatVersion = document.formatVersion ?? UTAFORMATIX_DATA_VERSION;
   if (formatVersion > UTAFORMATIX_DATA_VERSION) {
@@ -113,9 +121,9 @@ export function parseUfdata(input: string | object): Project {
   }
   return {
     format: Format.UfData,
-    inputFiles: [],
+    inputFiles: options?.inputFiles ?? [],
     name: document.project.name,
-    tracks: document.project.tracks.map((track, index) => parseTrack(index, track)),
+    tracks: document.project.tracks.map((track, index) => parseTrack(index, track, options?.simpleImport ?? false)),
     timeSignatures: document.project.timeSignatures,
     tempos: document.project.tempos,
     ppq: 480,
@@ -125,7 +133,12 @@ export function parseUfdata(input: string | object): Project {
   };
 }
 
-function writeTrack(track: Track): UfDataTrack {
+export function parseUfdata(input: string | object, options?: ParseUfdataOptions): Project {
+  const document = asDocument(input);
+  return parseUfdataDocument(document, options);
+}
+
+function writeTrack(track: Track, includePitch: boolean): UfDataTrack {
   return {
     name: track.name,
     notes: track.notes.map((note) => ({
@@ -135,30 +148,41 @@ function writeTrack(track: Track): UfDataTrack {
       tickOff: note.tickOff,
       phoneme: note.phoneme,
     })),
-    pitch: track.pitch
-      ? {
-          ticks: track.pitch.data.map((point) => point[0]),
-          values: track.pitch.data.map((point) => point[1]),
-          isAbsolute: track.pitch.isAbsolute,
-        }
-      : undefined,
+    pitch:
+      includePitch && track.pitch
+        ? {
+            ticks: track.pitch.data.map((point) => point[0]),
+            values: track.pitch.data.map((point) => point[1]),
+            isAbsolute: track.pitch.isAbsolute,
+          }
+        : {
+            ticks: [],
+            values: [],
+            isAbsolute: false,
+          },
   };
 }
 
 export interface WriteUfdataOptions {
   formatVersion?: number;
+  includePitch?: boolean;
 }
 
-export function writeUfdata(project: Project, opts?: WriteUfdataOptions): string {
-  const document: UfDataDocument = {
+export function generateUfdataDocument(project: Project, opts?: WriteUfdataOptions): UfDataDocument {
+  const includePitch = opts?.includePitch ?? true;
+  return {
     formatVersion: opts?.formatVersion ?? UTAFORMATIX_DATA_VERSION,
     project: {
       name: project.name,
-      tracks: project.tracks.map(writeTrack),
+      tracks: project.tracks.map((track) => writeTrack(track, includePitch)),
       timeSignatures: project.timeSignatures,
       tempos: project.tempos,
       measurePrefix: project.measurePrefix,
     },
   };
+}
+
+export function writeUfdata(project: Project, opts?: WriteUfdataOptions): string {
+  const document = generateUfdataDocument(project, opts);
   return JSON.stringify(document);
 }
