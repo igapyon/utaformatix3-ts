@@ -100,8 +100,8 @@
 - [x] ZIP 展開比較ユーティリティを実装
 - [x] XML 最小正規化比較を実装
 - [x] 要素順序の保持を検証
-- [ ] `vsqx -> project -> vsqx` 一致テストを追加
-- [ ] UFDATA 意味比較の二層検証を追加
+- [x] `vsqx -> project -> vsqx` 一致テストを追加
+- [x] UFDATA 意味比較の二層検証を追加
 
 ## 4. Phase 4: MusicXML 写経
 
@@ -127,12 +127,12 @@
 
 ## 進行中（1つだけ）
 
-- [ ] `vsqx -> project -> vsqx` 一致テストを追加
+- [ ] `src/core/io/MusicXml.ts` を追加
 
 ## テスト先行チェックポイント（TESTING.md 準拠）
 
 - [x] Phase 1: 型追加と同時に不変条件テスト（`tickOn < tickOff`, `duration > 0`, `Number.isSafeInteger`）を追加する
 - [x] Phase 2: `parseUfdata` 実装直後に `project -> ufdata -> project` round-trip テストを追加する
 - [x] Phase 2: golden ufdata を少数ケースで先に固定し、実装をそれに合わせる
-- [ ] Phase 3: VSQX は機能追加ごとに「ZIP構造比較 + UFDATA意味比較」の二層テストを追加する
+- [x] Phase 3: VSQX は機能追加ごとに「ZIP構造比較 + UFDATA意味比較」の二層テストを追加する
 - [ ] Phase 4: MusicXML preserve は最初に no-op diff 0 テストを追加し、以後の変更をガードする

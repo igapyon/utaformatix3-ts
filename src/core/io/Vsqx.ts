@@ -96,6 +96,15 @@ function getTagNames(schemaVersion: VsqxSchemaVersion): TagNames {
   return schemaVersion === "vsq4" ? TAG_NAMES_VSQ4 : TAG_NAMES_VSQ3;
 }
 
+function decodeXml(value: string): string {
+  return value
+    .replace(/&apos;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&gt;/g, ">")
+    .replace(/&lt;/g, "<")
+    .replace(/&amp;/g, "&");
+}
+
 function firstElementByTagName(parent: Element, tagName: string): Element | null {
   const node = parent.getElementsByTagName(tagName).item(0);
   return node instanceof Element ? node : null;
@@ -210,7 +219,7 @@ export interface ParseVsqxOptions {
   defaultLyric?: string;
 }
 
-export function parseVsqx(text: string, options?: ParseVsqxOptions): Project {
+function parseVsqxWithDom(text: string, options?: ParseVsqxOptions): Project {
   const parser = new DOMParser();
   const document = parser.parseFromString(text, "text/xml");
   const root = document.documentElement;
@@ -250,6 +259,130 @@ export function parseVsqx(text: string, options?: ParseVsqxOptions): Project {
       } satisfies VsqxExtras,
     },
   };
+}
+
+function extractFirstTagValue(source: string, tag: string): string | null {
+  const match = source.match(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`));
+  return match ? match[1].trim() : null;
+}
+
+function extractTagBlocks(source: string, tag: string): string[] {
+  return Array.from(source.matchAll(new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`, "g"))).map(
+    (match) => match[1],
+  );
+}
+
+function parseVsqxWithoutDom(text: string, options?: ParseVsqxOptions): Project {
+  const schemaVersion = detectVsqxSchemaVersion(text);
+  const tags = getTagNames(schemaVersion);
+  const masterTrackMatch = text.match(/<masterTrack>([\s\S]*?)<\/masterTrack>/);
+  if (!masterTrackMatch) throw new Error("VSQX masterTrack not found");
+  const masterTrack = masterTrackMatch[1];
+
+  const measurePrefix = Number(extractFirstTagValue(masterTrack, tags.preMeasure) ?? "0");
+
+  const rawTimeSignatures = extractTagBlocks(masterTrack, tags.timeSig)
+    .map((block) => {
+      const measurePosition = Number(extractFirstTagValue(block, tags.posMes));
+      const numerator = Number(extractFirstTagValue(block, tags.nume));
+      const denominator = Number(extractFirstTagValue(block, tags.denomi));
+      if (
+        !Number.isFinite(measurePosition) ||
+        !Number.isFinite(numerator) ||
+        !Number.isFinite(denominator)
+      ) {
+        return null;
+      }
+      return { measurePosition, numerator, denominator };
+    })
+    .filter((it): it is TimeSignature => it !== null);
+  const timeSignaturesBase =
+    rawTimeSignatures.length > 0 ? rawTimeSignatures : [{ measurePosition: 0, numerator: 4, denominator: 4 }];
+  const tickPrefix = getTickPrefix(timeSignaturesBase, measurePrefix);
+  const timeSignaturesAdjusted = timeSignaturesBase.map((it) => ({
+    ...it,
+    measurePosition: it.measurePosition - measurePrefix,
+  }));
+  const timeSignatures = timeSignaturesAdjusted.slice(
+    timeSignaturesAdjusted.reduce((acc, it, index) => (it.measurePosition <= 0 ? index : acc), 0),
+  );
+  if (timeSignatures.length > 0) {
+    timeSignatures[0] = { ...timeSignatures[0], measurePosition: 0 };
+  }
+
+  const temposBase = extractTagBlocks(masterTrack, tags.tempo)
+    .map((block) => {
+      const tickPosition = Number(extractFirstTagValue(block, tags.posTick));
+      const bpm = Number(extractFirstTagValue(block, tags.bpm));
+      if (!Number.isFinite(tickPosition) || !Number.isFinite(bpm)) return null;
+      return { tickPosition: tickPosition - tickPrefix, bpm: bpm / BPM_RATE };
+    })
+    .filter((it): it is Tempo => it !== null);
+  const temposRaw = temposBase.length > 0 ? temposBase : [{ tickPosition: 0, bpm: 120 }];
+  const tempos = temposRaw.slice(temposRaw.reduce((acc, it, index) => (it.tickPosition <= 0 ? index : acc), 0));
+  if (tempos.length > 0) {
+    tempos[0] = { ...tempos[0], tickPosition: 0 };
+  }
+
+  const tracks = extractTagBlocks(text, tags.vsTrack).map((trackBlock, trackIndex) => {
+    const name = decodeXml(extractFirstTagValue(trackBlock, tags.trackName) ?? `Track ${trackIndex + 1}`);
+    const partBlocks = extractTagBlocks(trackBlock, tags.musicalPart);
+    const notes: Note[] = partBlocks
+      .flatMap((partBlock) => {
+        const tickOffset = Number(extractFirstTagValue(partBlock, tags.posTick) ?? "0") - tickPrefix;
+        const noteBlocks = extractTagBlocks(partBlock, tags.note);
+        return noteBlocks.map((noteBlock) => ({ tickOffset, noteBlock }));
+      })
+      .map(({ tickOffset, noteBlock }, noteIndex) => {
+        const key = Number(extractFirstTagValue(noteBlock, tags.noteNum) ?? "0");
+        const tickOnBase = Number(extractFirstTagValue(noteBlock, tags.posTick) ?? "0");
+        const length = Number(extractFirstTagValue(noteBlock, tags.duration) ?? "0");
+        const lyric = decodeXml(extractFirstTagValue(noteBlock, tags.lyric) ?? options?.defaultLyric ?? "あ");
+        const phonemeRaw = extractFirstTagValue(noteBlock, tags.xSampa);
+        const phoneme = phonemeRaw == null ? undefined : decodeXml(phonemeRaw);
+        return {
+          id: noteIndex,
+          key,
+          lyric,
+          tickOn: tickOnBase + tickOffset,
+          tickOff: tickOnBase + tickOffset + length,
+          phoneme,
+        };
+      });
+    return {
+      id: trackIndex,
+      name,
+      notes,
+      pitch: null,
+    } as Track;
+  });
+
+  return {
+    format: Format.Vsqx,
+    inputFiles: [],
+    name: "vsqx",
+    tracks,
+    timeSignatures,
+    tempos,
+    ppq: 480,
+    measurePrefix,
+    importWarnings: [],
+    japaneseLyricsType: JapaneseLyricsType.Unknown,
+    extras: {
+      vsqx: {
+        schemaVersion,
+        originalXml: text,
+        preservedAt: new Date().toISOString(),
+      } satisfies VsqxExtras,
+    },
+  };
+}
+
+export function parseVsqx(text: string, options?: ParseVsqxOptions): Project {
+  if (typeof DOMParser !== "undefined") {
+    return parseVsqxWithDom(text, options);
+  }
+  return parseVsqxWithoutDom(text, options);
 }
 
 function escapeXml(value: string): string {
