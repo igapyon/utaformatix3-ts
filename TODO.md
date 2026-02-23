@@ -119,15 +119,15 @@
 
 ## 5. 追従タスク（upstream更新ごと）
 
-- [ ] `./scripts/sync-upstream.sh <ref>` を実行
-- [ ] upstream 差分（rename/move）を先に TS 側へ反映
-- [ ] `MAPPING.md` の mapping/status を更新
-- [ ] fixtures 再生成
-- [ ] テスト実行して差分を分類（整形/意味/仕様変更）
+- [x] `./scripts/sync-upstream.sh <ref>` を実行
+- [x] upstream 差分（rename/move）を先に TS 側へ反映
+- [x] `MAPPING.md` の mapping/status を更新
+- [x] fixtures 再生成
+- [x] テスト実行して差分を分類（整形/意味/仕様変更）
 
 ## 進行中（1つだけ）
 
-- [ ] `./scripts/sync-upstream.sh <ref>` を実行
+- [ ] （次回 upstream 更新時）`./scripts/sync-upstream.sh <ref>` を実行
 
 ## テスト先行チェックポイント（TESTING.md 準拠）
 

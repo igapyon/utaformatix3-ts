@@ -162,7 +162,7 @@ Phase 4: MusicXML
 上流更新時は以下を実行します。
 
 - submodule update
-- fixtures 再生成
+- fixtures 再生成（`./scripts/regenerate-fixtures.sh`）
 - テスト実行
 - 差分確認
 
