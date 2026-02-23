@@ -1,0 +1,18 @@
+{
+  "kind": "cevio",
+  "input": {
+    "tickPrefix": 0,
+    "tempos": [
+      { "tickPosition": 0, "bpm": 120 }
+    ],
+    "events": [
+      { "index": 0, "repeat": 10, "value": 5.566914341 },
+      { "index": 10, "repeat": 10, "value": 5.62467660605 }
+    ]
+  },
+  "expected": {
+    "isAbsolute": true,
+    "pointCount": 3,
+    "firstTick": 0
+  }
+}

@@ -77,6 +77,7 @@
 - [x] JSON canonicalize 方針をテスト実装
 - [x] 並べ替え/丸めを勝手に行っていないことを確認
 - [x] diagnostics 形式を固定（最低限）
+- [x] parse 時の欠落フィールド正規化（pitch/tracks/tempos/timeSignatures/measurePrefix）を実装
 
 ### 2-3. フィクスチャとテスト
 
@@ -119,6 +120,7 @@
 
 ## 4.5. 追加フォーマット候補（スコープ拡張時）
 
+- [ ] （方針）`MID` はいったん後回し。先に `1,2`（台帳整合・pitch parity 強化）を優先する
 - [ ] `MID` の parse/write 方針を決める（`upstream/core/io/Mid.kt`）
 - [ ] `MID` の MVP写経（tempo/timeSignature/note）を実装する
 - [ ] `MID` round-trip テストを追加する
@@ -154,6 +156,7 @@
 - [x] core/process 基礎写経: Eval/Interpolation/LengthLimit/Resampling/RDP/Zoom/TimeUnit（`tests/upstream-parity/processCoreParity.test.ts`）
 - [x] core/process lyrics 写経: Mapping/JP分析・清掃・変換/CN変換（`tests/upstream-parity/lyricsMappingAndJapanese.test.ts`）
 - [x] core/process pitch 写経: CeVIO/DeepVocal/OpenUtau/SynthV/UtauMode1/UtauMode2/Vibrato（`tests/upstream-parity/pitchConversionsSmoke.test.ts`）
+- [x] core/process pitch parity: fixture 駆動ケース（cevio/dv/ustx/svp/mode1/mode2）（`tests/upstream-parity/pitchFixtureCases.test.ts`, `tests/fixtures/pitch/*`）
 - [x] upstream jsTest parity: `TickTimeTransformerTest.kt` 写経（`tests/upstream-parity/tickTimeTransformer.test.ts`）
 - [x] upstream jsTest parity: `PitchCalculationTest.kt` 写経（`tests/upstream-parity/pitchCalculation.test.ts`）
 - [x] upstream jsTest parity: `LyricsReplacementTest.kt` 写経（`tests/upstream-parity/lyricsReplacement.test.ts`）

@@ -254,9 +254,34 @@ function testGenerateUfdataDocumentWithoutPitch(): void {
   });
 
   const document = generateUfdataDocument(project, { includePitch: false });
-  assert(document.project.tracks[0].pitch.ticks.length === 0, "includePitch=false should clear pitch.ticks");
-  assert(document.project.tracks[0].pitch.values.length === 0, "includePitch=false should clear pitch.values");
-  assert(document.project.tracks[0].pitch.isAbsolute === false, "includePitch=false pitch.isAbsolute mismatch");
+  const firstTrack = document.project.tracks[0];
+  if (!firstTrack) {
+    throw new Error("generated document must contain first track");
+  }
+  assert((firstTrack.pitch?.ticks.length ?? -1) === 0, "includePitch=false should clear pitch.ticks");
+  assert((firstTrack.pitch?.values.length ?? -1) === 0, "includePitch=false should clear pitch.values");
+  assert(firstTrack.pitch?.isAbsolute === false, "includePitch=false pitch.isAbsolute mismatch");
+}
+
+function testParseUfdataDefaultsForMissingPitchAndProjectFields(): void {
+  const project = parseUfdata({
+    project: {
+      name: "defaults",
+      tracks: [
+        {
+          name: "Track 1",
+          notes: [{ key: 60, lyric: "la", tickOn: 0, tickOff: 480 }],
+        },
+      ],
+    },
+  });
+
+  assert(project.tracks.length === 1, "default project tracks mismatch");
+  assert(project.tracks[0].pitch != null, "missing pitch should be normalized");
+  assert(project.tracks[0].pitch?.data.length === 0, "normalized pitch should be empty");
+  assert(project.tempos.length === 1, "default tempos should be applied");
+  assert(project.timeSignatures.length === 1, "default timeSignatures should be applied");
+  assert(project.measurePrefix === 0, "default measurePrefix should be 0");
 }
 
 testUfdataRoundTrip();
@@ -268,3 +293,4 @@ testUfdataParseValidatesNotes();
 testUfdataWriteAlwaysContainsPitch();
 testParseUfdataDocumentWithInputFiles();
 testGenerateUfdataDocumentWithoutPitch();
+testParseUfdataDefaultsForMissingPitchAndProjectFields();

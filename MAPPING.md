@@ -67,23 +67,23 @@
 | `upstream/utaformatix/core/src/main/kotlin/core/util/XmlExtension.kt` | `src/core/util/XmlExtension.ts` | in_progress | DOM helper 群を写経（Error 例外化） |
 | `upstream/utaformatix/core/src/main/kotlin/core/util/MidiUtil.kt` | `src/core/util/MidiUtil.ts` | in_progress | MIDI 補助関数を写経 |
 | `upstream/utaformatix/core/src/main/kotlin/core/external/Encoding.kt` | `src/core/external/Encoding.ts` | in_progress | external wrapper を最小導入 |
-| `upstream/utaformatix/core/src/main/kotlin/core/io/UfData.kt` | `src/core/io/UfData.ts` | in_progress | parse/write + version warning + diagnostics 形式を実装 |
+| `upstream/utaformatix/core/src/main/kotlin/core/io/UfData.kt` | `src/core/io/UfData.ts` | in_progress | parse/write + version warning + diagnostics + 欠落フィールド正規化を実装（`tests/upstream-parity/ufdataRoundTrip.test.ts`） |
 | `upstream/utaformatix/core/src/main/kotlin/core/io/Vsqx.kt` | `src/core/io/Vsqx.ts` | in_progress | VSQX parse/write + PIT/PBS control 対応 + round-trip/semantic テスト追加 |
 | `upstream/utaformatix/core/src/main/kotlin/core/io/MusicXml.kt` | `src/core/io/MusicXml.ts` | in_progress | generate/preserve(no-op diff 0) + tie 結合/notations/direction 出力の parity 強化 |
 | `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/VocaloidPartPitchData.kt` | `src/core/process/pitch/VocaloidPitchConversion.ts` | in_progress | VSQX PIT/PBS <-> internal pitch 変換を導入 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/CevioPitchConversion.kt` | `src/core/process/pitch/CevioPitchConversion.ts` | in_progress | CeVIO pitch 変換を写経 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/DeepVocalPitchConversion.kt` | `src/core/process/pitch/DeepVocalPitchConversion.ts` | in_progress | DeepVocal pitch 変換を写経 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/OpenUtauPitchConversion.kt` | `src/core/process/pitch/OpenUtauPitchConversion.ts` | in_progress | OpenUtau(ustx) pitch 変換を写経 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/SynthVPitchConversion.kt` | `src/core/process/pitch/SynthVPitchConversion.ts` | in_progress | SynthV(svp) pitch 処理を写経 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/UtauMode1PitchConversion.kt` | `src/core/process/pitch/UtauMode1PitchConversion.ts` | in_progress | UTAU mode1 pitch 変換を写経 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/UtauMode2PitchConversion.kt` | `src/core/process/pitch/UtauMode2PitchConversion.ts` | in_progress | UTAU mode2 pitch 変換を写経 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/UtauVibratoConversion.kt` | `src/core/process/pitch/UtauVibratoConversion.ts` | in_progress | UTAU/OpenUtau 用 vibrato を写経 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/lyrics/LyricsMapping.kt` | `src/core/process/lyrics/LyricsMapping.ts` | in_progress | mapText ベースの lyrics mapping を写経 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/lyrics/chinese/Conversion.kt` | `src/core/process/lyrics/chinese/Conversion.ts` | in_progress | 中国語歌詞->Pinyin 変換を写経 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/lyrics/japanese/Analysis.kt` | `src/core/process/lyrics/japanese/Analysis.ts` | in_progress | 日本語歌詞タイプ判定を写経 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/lyrics/japanese/Cleanup.kt` | `src/core/process/lyrics/japanese/Cleanup.ts` | in_progress | 日本語歌詞 cleanup を写経 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/lyrics/japanese/Conversion.kt` | `src/core/process/lyrics/japanese/Conversion.ts` | in_progress | 日本語歌詞変換 (CV/VCV, kana/romaji) を写経 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/lyrics/japanese/Words.kt` | `src/core/process/lyrics/japanese/Words.ts` | in_progress | kana/romaji 辞書を写経 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/CevioPitchConversion.kt` | `src/core/process/pitch/CevioPitchConversion.ts` | verified | `tests/upstream-parity/pitchConversionsSmoke.test.ts` で検証 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/DeepVocalPitchConversion.kt` | `src/core/process/pitch/DeepVocalPitchConversion.ts` | verified | `tests/upstream-parity/pitchConversionsSmoke.test.ts` で検証 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/OpenUtauPitchConversion.kt` | `src/core/process/pitch/OpenUtauPitchConversion.ts` | verified | `tests/upstream-parity/pitchConversionsSmoke.test.ts` で検証 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/SynthVPitchConversion.kt` | `src/core/process/pitch/SynthVPitchConversion.ts` | verified | `tests/upstream-parity/pitchConversionsSmoke.test.ts` で検証 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/UtauMode1PitchConversion.kt` | `src/core/process/pitch/UtauMode1PitchConversion.ts` | verified | `tests/upstream-parity/pitchConversionsSmoke.test.ts` で検証 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/UtauMode2PitchConversion.kt` | `src/core/process/pitch/UtauMode2PitchConversion.ts` | verified | `tests/upstream-parity/pitchConversionsSmoke.test.ts` で検証 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/UtauVibratoConversion.kt` | `src/core/process/pitch/UtauVibratoConversion.ts` | verified | `tests/upstream-parity/pitchConversionsSmoke.test.ts` で検証 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/lyrics/LyricsMapping.kt` | `src/core/process/lyrics/LyricsMapping.ts` | verified | `tests/upstream-parity/lyricsMappingAndJapanese.test.ts` で検証 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/lyrics/chinese/Conversion.kt` | `src/core/process/lyrics/chinese/Conversion.ts` | verified | `tests/upstream-parity/lyricsMappingAndJapanese.test.ts` で検証 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/lyrics/japanese/Analysis.kt` | `src/core/process/lyrics/japanese/Analysis.ts` | verified | `tests/upstream-parity/lyricsMappingAndJapanese.test.ts` で検証 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/lyrics/japanese/Cleanup.kt` | `src/core/process/lyrics/japanese/Cleanup.ts` | verified | `tests/upstream-parity/lyricsMappingAndJapanese.test.ts` で検証 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/lyrics/japanese/Conversion.kt` | `src/core/process/lyrics/japanese/Conversion.ts` | verified | `tests/upstream-parity/lyricsMappingAndJapanese.test.ts` で検証 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/lyrics/japanese/Words.kt` | `src/core/process/lyrics/japanese/Words.ts` | verified | `tests/upstream-parity/lyricsMappingAndJapanese.test.ts` で検証 |
 | `upstream/utaformatix/core/src/main/kotlin/core/process/Eval.kt` | `src/core/process/Eval.ts` | in_progress | `evalFractionOrNull` を写経 |
 | `upstream/utaformatix/core/src/main/kotlin/core/process/Interpolation.kt` | `src/core/process/Interpolation.ts` | in_progress | linear/cosine 補間を写経 |
 | `upstream/utaformatix/core/src/main/kotlin/core/process/LengthLimit.kt` | `src/core/process/LengthLimit.ts` | in_progress | project/track 長さ制限を写経 |

@@ -27,7 +27,7 @@ export interface UfDataPitch {
 export interface UfDataTrack {
   name: string;
   notes: UfDataNote[];
-  pitch: UfDataPitch;
+  pitch?: UfDataPitch;
 }
 
 export interface UfDataProject {
@@ -63,6 +63,32 @@ function asDocument(input: string | object): UfDataDocument {
     throw new Error("Invalid UFDATA: missing project");
   }
   return document as UfDataDocument;
+}
+
+function normalizePitch(pitch: UfDataPitch | undefined): UfDataPitch {
+  return {
+    ticks: pitch?.ticks ?? [],
+    values: pitch?.values ?? [],
+    isAbsolute: pitch?.isAbsolute ?? false,
+  };
+}
+
+function normalizeDocument(document: UfDataDocument): UfDataDocument {
+  const project = document.project as Partial<UfDataProject>;
+  return {
+    formatVersion: document.formatVersion,
+    project: {
+      name: project.name ?? "",
+      tracks: (project.tracks ?? []).map((track) => ({
+        name: track.name ?? "",
+        notes: track.notes ?? [],
+        pitch: normalizePitch(track.pitch),
+      })),
+      timeSignatures: project.timeSignatures ?? [{ measurePosition: 0, numerator: 4, denominator: 4 }],
+      tempos: project.tempos ?? [{ tickPosition: 0, bpm: 120 }],
+      measurePrefix: project.measurePrefix ?? 0,
+    },
+  };
 }
 
 export function collectUfDataDiagnostics(input: string | object): UfDataDiagnostic[] {
@@ -110,8 +136,9 @@ export interface ParseUfdataOptions {
 }
 
 export function parseUfdataDocument(document: UfDataDocument, options?: ParseUfdataOptions): Project {
+  const normalizedDocument = normalizeDocument(document);
   const importWarnings: ImportWarning[] = [];
-  const formatVersion = document.formatVersion ?? UTAFORMATIX_DATA_VERSION;
+  const formatVersion = normalizedDocument.formatVersion ?? UTAFORMATIX_DATA_VERSION;
   if (formatVersion > UTAFORMATIX_DATA_VERSION) {
     importWarnings.push({
       kind: "IncompatibleFormatSerializationVersion",
@@ -122,12 +149,14 @@ export function parseUfdataDocument(document: UfDataDocument, options?: ParseUfd
   return {
     format: Format.UfData,
     inputFiles: options?.inputFiles ?? [],
-    name: document.project.name,
-    tracks: document.project.tracks.map((track, index) => parseTrack(index, track, options?.simpleImport ?? false)),
-    timeSignatures: document.project.timeSignatures,
-    tempos: document.project.tempos,
+    name: normalizedDocument.project.name,
+    tracks: normalizedDocument.project.tracks.map((track, index) =>
+      parseTrack(index, track, options?.simpleImport ?? false)
+    ),
+    timeSignatures: normalizedDocument.project.timeSignatures,
+    tempos: normalizedDocument.project.tempos,
     ppq: 480,
-    measurePrefix: document.project.measurePrefix,
+    measurePrefix: normalizedDocument.project.measurePrefix,
     importWarnings,
     japaneseLyricsType: JapaneseLyricsType.Unknown,
   };

@@ -1,0 +1,29 @@
+{
+  "kind": "dv",
+  "input": {
+    "notes": [
+      { "id": 0, "key": 60, "lyric": "a", "tickOn": 0, "tickOff": 240 },
+      { "id": 1, "key": 62, "lyric": "i", "tickOn": 240, "tickOff": 480 }
+    ],
+    "tempos": [
+      { "tickPosition": 0, "bpm": 120 }
+    ],
+    "pitch": {
+      "data": [
+        [0, 0],
+        [120, 0.5],
+        [240, 0]
+      ],
+      "isAbsolute": false
+    },
+    "segments": [
+      { "tickOffset": 0, "data": [[0, 100], [10, 120], [20, 140]] }
+    ]
+  },
+  "expected": {
+    "exportPointCountMin": 3,
+    "importIsAbsolute": true,
+    "importPointCountMin": 2
+  }
+}
+
