@@ -182,7 +182,20 @@ Phase 4: MusicXML
 
 これにより追従箇所を特定します。
 
-## 6. 原則
+## 6. ブラウザ配布物の動作確認（IIFE）
+
+ブラウザ直読み込み用の配布物（`dist-lib`）は以下で生成します。
+
+```bash
+npm run build:lib
+```
+
+生成後、`playground.html` をブラウザで開いて以下を確認します。
+
+- `IIFE loaded.` が表示されること
+- `window.Utaformatix3Ts` 経由の最小 API 呼び出し結果が表示されること
+
+## 7. 原則
 
 - fixtures は編集しない
 - 上流を正本とする

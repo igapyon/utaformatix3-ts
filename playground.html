@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>utaformatix3-ts playground</title>
+  </head>
+  <body>
+    <main>
+      <h1>utaformatix3-ts playground</h1>
+      <p id="status">Loading IIFE...</p>
+      <pre id="result"></pre>
+    </main>
+
+    <script src="./dist-lib/utaformatix3-ts.iife.js"></script>
+    <script>
+      (function () {
+        const status = document.getElementById("status");
+        const result = document.getElementById("result");
+        if (!status || !result) return;
+
+        const api = window.Utaformatix3Ts;
+        if (!api) {
+          status.textContent = "IIFE not loaded: window.Utaformatix3Ts is undefined.";
+          return;
+        }
+
+        status.textContent = "IIFE loaded.";
+        const sample = {
+          formatVersion: 1,
+          project: {
+            name: "playground",
+            tracks: [
+              {
+                name: "Track 1",
+                notes: [{ key: 60, lyric: "la", tickOn: 0, tickOff: 480, phoneme: "l a" }],
+              },
+            ],
+            timeSignatures: [{ measurePosition: 0, numerator: 4, denominator: 4 }],
+            tempos: [{ tickPosition: 0, bpm: 120 }],
+            measurePrefix: 0,
+          },
+        };
+
+        const project = api.parseUfdata(sample);
+        result.textContent = JSON.stringify(
+          {
+            format: project.format,
+            trackCount: project.tracks.length,
+            firstLyric: project.tracks[0]?.notes[0]?.lyric ?? null,
+          },
+          null,
+          2,
+        );
+      })();
+    </script>
+  </body>
+</html>

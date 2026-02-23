@@ -116,6 +116,24 @@ UtaFormatix is licensed under the Apache License 2.0, and this TypeScript port i
 ./scripts/sync-upstream.sh <ref>
 ```
 
+## Browser Distribution (IIFE)
+
+For direct browser `<script>` usage, build the single-file IIFE bundle:
+
+```bash
+npm run build:lib
+```
+
+Output files:
+
+- `dist-lib/utaformatix3-ts.iife.js` (global `window.Utaformatix3Ts`)
+- `dist-lib/utaformatix3-ts.esm.js` (ES module)
+
+Quick check:
+
+- Open `playground.html` in a browser after `npm run build:lib`.
+- It loads `dist-lib/utaformatix3-ts.iife.js` and shows a minimal API call result.
+
 ---
 
 # プロジェクト理念（Project Philosophy）
