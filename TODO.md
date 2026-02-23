@@ -5,85 +5,85 @@
 
 ## 0. 運用準備
 
-- [ ] `MAPPING.md` の pinned commit を最新同期 ref に更新する（upstream 更新のたび）
-- [ ] `MAPPING.md` の directory mapping と実ディレクトリ差分を確認する
-- [ ] `src/` の初期ディレクトリ骨格を作る（`core/model`, `core/util`, `core/io`, `core/process`）
-- [ ] `tests/` 配下に parity テスト置き場を作る（`tests/upstream-parity`）
-- [ ] `TODO.md` の「進行中」セクションを毎回更新する
+- [x] `MAPPING.md` の pinned commit を最新同期 ref に更新する（upstream 更新のたび）
+- [x] `MAPPING.md` の directory mapping と実ディレクトリ差分を確認する
+- [x] `src/` の初期ディレクトリ骨格を作る（`core/model`, `core/util`, `core/io`, `core/process`）
+- [x] `tests/` 配下に parity テスト置き場を作る（`tests/upstream-parity`）
+- [x] `TODO.md` の「進行中」セクションを毎回更新する
 
 ## 1. Phase 1: model 写経
 
 ### 1-1. MVPモデル
 
-- [ ] `src/core/model/Project.ts` を追加
-- [ ] `src/core/model/Track.ts` を追加
-- [ ] `src/core/model/Note.ts` を追加
-- [ ] `src/core/model/Tempo.ts` を追加
-- [ ] `src/core/model/TimeSignature.ts` を追加
-- [ ] `extras?: Record<string, unknown>` を MVP 対象型に追加
-- [ ] 判別キー命名を確認（upstream 語彙優先、無ければ `kind`）
+- [x] `src/core/model/Project.ts` を追加
+- [x] `src/core/model/Track.ts` を追加
+- [x] `src/core/model/Note.ts` を追加
+- [x] `src/core/model/Tempo.ts` を追加
+- [x] `src/core/model/TimeSignature.ts` を追加
+- [x] `extras?: Record<string, unknown>` を MVP 対象型に追加
+- [x] 判別キー命名を確認（upstream 語彙優先、無ければ `kind`）
 
 ### 1-2. model 全体写経（upstream/core/model）
 
-- [ ] `Constants.kt -> src/core/model/Constants.ts`
-- [ ] `ConversionParams.kt -> src/core/model/ConversionParams.ts`
-- [ ] `ExportNotification.kt -> src/core/model/ExportNotification.ts`
-- [ ] `ExportResult.kt -> src/core/model/ExportResult.ts`
-- [ ] `Feature.kt -> src/core/model/Feature.ts`
-- [ ] `Format.kt -> src/core/model/Format.ts`
-- [ ] `ImportParams.kt -> src/core/model/ImportParams.ts`
-- [ ] `ImportWarning.kt -> src/core/model/ImportWarning.ts`
-- [ ] `JapaneseLyricsType.kt -> src/core/model/JapaneseLyricsType.ts`
-- [ ] `PhonemesMappingPreset.kt -> src/core/model/PhonemesMappingPreset.ts`
-- [ ] `Pitch.kt -> src/core/model/Pitch.ts`
-- [ ] `ProjectContainer.kt -> src/core/model/ProjectContainer.ts`
-- [ ] `TickCounter.kt -> src/core/model/TickCounter.ts`
-- [ ] `ValueTree.kt -> src/core/model/ValueTree.ts`
+- [x] `Constants.kt -> src/core/model/Constants.ts`
+- [x] `ConversionParams.kt -> src/core/model/ConversionParams.ts`
+- [x] `ExportNotification.kt -> src/core/model/ExportNotification.ts`
+- [x] `ExportResult.kt -> src/core/model/ExportResult.ts`
+- [x] `Feature.kt -> src/core/model/Feature.ts`
+- [x] `Format.kt -> src/core/model/Format.ts`
+- [x] `ImportParams.kt -> src/core/model/ImportParams.ts`
+- [x] `ImportWarning.kt -> src/core/model/ImportWarning.ts`
+- [x] `JapaneseLyricsType.kt -> src/core/model/JapaneseLyricsType.ts`
+- [x] `PhonemesMappingPreset.kt -> src/core/model/PhonemesMappingPreset.ts`
+- [x] `Pitch.kt -> src/core/model/Pitch.ts`
+- [x] `ProjectContainer.kt -> src/core/model/ProjectContainer.ts`
+- [x] `TickCounter.kt -> src/core/model/TickCounter.ts`
+- [x] `ValueTree.kt -> src/core/model/ValueTree.ts`
 
 ### 1-3. 不変条件と安全整数
 
-- [ ] `tickOn < tickOff` の assert を実装
-- [ ] `duration > 0` の assert を実装
-- [ ] `ppq > 0` の assert を実装
-- [ ] `tempo > 0` の assert を実装
-- [ ] tick/position 系に `Number.isSafeInteger` チェックを実装
+- [x] `tickOn < tickOff` の assert を実装
+- [x] `duration > 0` の assert を実装
+- [x] `ppq > 0` の assert を実装
+- [x] `tempo > 0` の assert を実装
+- [x] tick/position 系に `Number.isSafeInteger` チェックを実装
 
 ### 1-4. 最小 util（upstream/core/util）
 
-- [ ] `Result.kt -> src/core/util/Result.ts`
-- [ ] `ChainCall.kt -> src/core/util/ChainCall.ts`
-- [ ] `TextUtil.kt -> src/core/util/TextUtil.ts`
-- [ ] `EncodingUtil.kt -> src/core/util/EncodingUtil.ts`
+- [x] `Result.kt -> src/core/util/Result.ts`
+- [x] `ChainCall.kt -> src/core/util/ChainCall.ts`
+- [x] `TextUtil.kt -> src/core/util/TextUtil.ts`
+- [x] `EncodingUtil.kt -> src/core/util/EncodingUtil.ts`
 - [ ] 必要なら `XmlExtension.kt -> src/core/util/XmlExtension.ts`
 - [ ] 必要なら `MidiUtil.kt -> src/core/util/MidiUtil.ts`
 
 ### 1-5. Phase 1 検証
 
-- [ ] 型チェックを通す
-- [ ] model の最小バリデーションテストを追加
-- [ ] `MAPPING.md` の file mapping と status を更新
+- [x] 型チェックを通す
+- [x] model の最小バリデーションテストを追加
+- [x] `MAPPING.md` の file mapping と status を更新
 
 ## 2. Phase 2: UFDATA 写経
 
 ### 2-1. API
 
-- [ ] `src/core/io/UfData.ts` を追加
-- [ ] `parseUfdata(json: string | object): Project` を実装
-- [ ] `writeUfdata(project: Project, opts?): string` を実装
+- [x] `src/core/io/UfData.ts` を追加
+- [x] `parseUfdata(json: string | object): Project` を実装
+- [x] `writeUfdata(project: Project, opts?): string` を実装
 - [ ] upstream versioning 仕様を確認して反映
 
 ### 2-2. 比較可能性
 
-- [ ] JSON canonicalize 方針をテスト実装
-- [ ] 並べ替え/丸めを勝手に行っていないことを確認
+- [x] JSON canonicalize 方針をテスト実装
+- [x] 並べ替え/丸めを勝手に行っていないことを確認
 - [ ] diagnostics 形式を固定（最低限）
 
 ### 2-3. フィクスチャとテスト
 
-- [ ] `tests/fixtures/ufdata` の置き場を作成
-- [ ] golden ufdata ケースを 1 件追加
-- [ ] `project -> ufdata -> project` round-trip テストを追加
-- [ ] semantic 同一（notes/tempo/timeSignatures）検証を追加
+- [x] `tests/fixtures/ufdata` の置き場を作成
+- [x] golden ufdata ケースを 1 件追加
+- [x] `project -> ufdata -> project` round-trip テストを追加
+- [x] semantic 同一（notes/tempo/timeSignatures）検証を追加
 - [ ] `extras` は比較対象外（Phase 1-2）をテストに明記
 
 ## 3. Phase 3: VSQX 写経
@@ -127,12 +127,12 @@
 
 ## 進行中（1つだけ）
 
-- [ ] 現在着手中タスクをここに 1 件だけ書く
+- [ ] upstream versioning 仕様を確認して反映
 
 ## テスト先行チェックポイント（TESTING.md 準拠）
 
-- [ ] Phase 1: 型追加と同時に不変条件テスト（`tickOn < tickOff`, `duration > 0`, `Number.isSafeInteger`）を追加する
-- [ ] Phase 2: `parseUfdata` 実装直後に `project -> ufdata -> project` round-trip テストを追加する
-- [ ] Phase 2: golden ufdata を少数ケースで先に固定し、実装をそれに合わせる
+- [x] Phase 1: 型追加と同時に不変条件テスト（`tickOn < tickOff`, `duration > 0`, `Number.isSafeInteger`）を追加する
+- [x] Phase 2: `parseUfdata` 実装直後に `project -> ufdata -> project` round-trip テストを追加する
+- [x] Phase 2: golden ufdata を少数ケースで先に固定し、実装をそれに合わせる
 - [ ] Phase 3: VSQX は機能追加ごとに「ZIP構造比較 + UFDATA意味比較」の二層テストを追加する
 - [ ] Phase 4: MusicXML preserve は最初に no-op diff 0 テストを追加し、以後の変更をガードする
