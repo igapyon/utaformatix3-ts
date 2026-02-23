@@ -36,13 +36,6 @@
         color: #b00020;
         white-space: pre-wrap;
       }
-      #outputPreview {
-        background: #f6f8fa;
-        border: 1px solid #d0d7de;
-        padding: 12px;
-        overflow: auto;
-        max-height: 280px;
-      }
     </style>
   </head>
   <body>
@@ -54,39 +47,22 @@
         <code>npm install</code> -> <code>npm run build:lib</code>
       </p>
 
-      <div class="row">
-        <label>
-          Input format
-          <select id="inputFormat">
-            <option value="vsqx">VSQX</option>
-            <option value="musicxml">MusicXML</option>
-            <option value="ufdata">UFDATA</option>
-          </select>
-        </label>
-        <label>
-          Output format
-          <select id="outputFormat">
-            <option value="vsqx">VSQX</option>
-            <option value="musicxml">MusicXML</option>
-            <option value="ufdata">UFDATA</option>
-          </select>
-        </label>
-      </div>
+      <div class="row"><strong>Input format: auto-detected from file extension</strong></div>
 
       <div class="row">
         <label>
           Input file
-          <input id="inputFile" type="file" />
+          <input id="inputFile" type="file" accept=".vsqx,.musicxml,.xml,.ufdata,.json" />
         </label>
       </div>
 
       <div class="row">
-        <button id="convertButton" type="button">Convert</button>
-        <button id="downloadButton" type="button" disabled>Download Output</button>
+        <button id="downloadVsqxButton" type="button">Download VSQX</button>
+        <button id="downloadMusicXmlButton" type="button">Download MusicXML</button>
+        <button id="downloadUfdataButton" type="button">Download UFDATA</button>
       </div>
 
       <p id="error"></p>
-      <pre id="outputPreview"></pre>
     </main>
 
     <script src="./dist-lib/utaformatix3-ts.iife.js"></script>
@@ -94,21 +70,17 @@
       (function () {
         const status = document.getElementById("status");
         const error = document.getElementById("error");
-        const outputPreview = document.getElementById("outputPreview");
-        const inputFormat = document.getElementById("inputFormat");
-        const outputFormat = document.getElementById("outputFormat");
         const inputFile = document.getElementById("inputFile");
-        const convertButton = document.getElementById("convertButton");
-        const downloadButton = document.getElementById("downloadButton");
+        const downloadVsqxButton = document.getElementById("downloadVsqxButton");
+        const downloadMusicXmlButton = document.getElementById("downloadMusicXmlButton");
+        const downloadUfdataButton = document.getElementById("downloadUfdataButton");
         if (
           !status ||
           !error ||
-          !outputPreview ||
-          !inputFormat ||
-          !outputFormat ||
           !inputFile ||
-          !convertButton ||
-          !downloadButton
+          !downloadVsqxButton ||
+          !downloadMusicXmlButton ||
+          !downloadUfdataButton
         ) {
           return;
         }
@@ -119,10 +91,17 @@
           return;
         }
 
-        status.textContent = "IIFE loaded. Select file and formats, then click Convert.";
-
-        let latestOutputText = "";
-        let latestOutputExt = "txt";
+        status.textContent = "IIFE loaded. Select file, then click output format button.";
+        let detectedInputFormat = null;
+        function detectInputFormatFromFileName(fileName) {
+          const lower = fileName.toLowerCase();
+          if (lower.endsWith(".vsqx")) return "vsqx";
+          if (lower.endsWith(".musicxml")) return "musicxml";
+          if (lower.endsWith(".ufdata") || lower.endsWith(".ufdata.json")) return "ufdata";
+          if (lower.endsWith(".xml")) return "musicxml";
+          if (lower.endsWith(".json")) return "ufdata";
+          return null;
+        }
 
         function parseProject(text, format) {
           if (format === "vsqx") return api.parseVsqx(text, { defaultLyric: "あ" });
@@ -138,46 +117,71 @@
           throw new Error("Unsupported output format: " + format);
         }
 
-        convertButton.addEventListener("click", async function () {
-          error.textContent = "";
-          outputPreview.textContent = "";
-          latestOutputText = "";
-          latestOutputExt = "txt";
-          downloadButton.disabled = true;
+        function downloadText(text, extension, baseName) {
+          const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = baseName + "." + extension;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }
 
+        async function convertAndDownload(outputFormat) {
+          error.textContent = "";
           const file = inputFile.files && inputFile.files[0];
           if (!file) {
             error.textContent = "Input file is not selected.";
             return;
           }
+          const inputFormat = detectedInputFormat ?? detectInputFormatFromFileName(file.name);
+          if (!inputFormat) {
+            error.textContent = "Unknown input extension. Supported: .vsqx, .musicxml, .xml, .ufdata, .json";
+            return;
+          }
           try {
             const inputText = await file.text();
-            const project = parseProject(inputText, inputFormat.value);
-            const output = writeProject(project, outputFormat.value);
-            latestOutputText = output.text;
-            latestOutputExt = output.ext;
-            outputPreview.textContent = output.text.slice(0, 20000);
-            downloadButton.disabled = false;
+            const project = parseProject(inputText, inputFormat);
+            const output = writeProject(project, outputFormat);
+            const baseName = file.name.replace(/\.[^.]+$/, "") || "converted";
+            downloadText(output.text, output.ext, baseName);
             status.textContent =
-              "Converted: " + inputFormat.value + " -> " + outputFormat.value + " / tracks=" + project.tracks.length;
+              "Converted and downloaded: " +
+              inputFormat +
+              " -> " +
+              outputFormat +
+              " / tracks=" +
+              project.tracks.length;
           } catch (e) {
             const message = e instanceof Error ? e.message : String(e);
             error.textContent = "Convert failed:\n" + message;
             status.textContent = "Convert failed.";
           }
+        }
+
+        inputFile.addEventListener("change", function () {
+          const file = inputFile.files && inputFile.files[0];
+          if (!file) return;
+          const detected = detectInputFormatFromFileName(file.name);
+          if (detected) {
+            detectedInputFormat = detected;
+            status.textContent = "Input format auto-detected from extension: " + detected;
+          } else {
+            detectedInputFormat = null;
+            status.textContent = "Unknown extension.";
+          }
         });
 
-        downloadButton.addEventListener("click", function () {
-          if (!latestOutputText) return;
-          const blob = new Blob([latestOutputText], { type: "text/plain;charset=utf-8" });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement("a");
-          a.href = url;
-          a.download = "converted." + latestOutputExt;
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
+        downloadVsqxButton.addEventListener("click", function () {
+          convertAndDownload("vsqx");
+        });
+        downloadMusicXmlButton.addEventListener("click", function () {
+          convertAndDownload("musicxml");
+        });
+        downloadUfdataButton.addEventListener("click", function () {
+          convertAndDownload("ufdata");
         });
       })();
     </script>

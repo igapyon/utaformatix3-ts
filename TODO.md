@@ -54,8 +54,8 @@
 - [x] `ChainCall.kt -> src/core/util/ChainCall.ts`
 - [x] `TextUtil.kt -> src/core/util/TextUtil.ts`
 - [x] `EncodingUtil.kt -> src/core/util/EncodingUtil.ts`
-- [ ] 必要なら `XmlExtension.kt -> src/core/util/XmlExtension.ts`
-- [ ] 必要なら `MidiUtil.kt -> src/core/util/MidiUtil.ts`
+- [x] `XmlExtension.kt -> src/core/util/XmlExtension.ts`
+- [x] `MidiUtil.kt -> src/core/util/MidiUtil.ts`
 
 ### 1-5. Phase 1 検証
 
@@ -145,6 +145,7 @@
 - [x] MusicXML parse: 休符スキップ・複数小節・テンポ抽出（`tests/upstream-parity/musicXmlParse.test.ts`）
 - [x] MusicXML parse: tie start/stop 結合（`tests/upstream-parity/musicXmlParse.test.ts`）
 - [x] MusicXML generate: tempo direction/metronome + tie/notations + syllabic（`tests/upstream-parity/musicXmlGenerateDetails.test.ts`）
+- [x] core/process 基礎写経: Eval/Interpolation/LengthLimit/Resampling/RDP/Zoom/TimeUnit（`tests/upstream-parity/processCoreParity.test.ts`）
 - [x] upstream jsTest parity: `TickTimeTransformerTest.kt` 写経（`tests/upstream-parity/tickTimeTransformer.test.ts`）
 - [x] upstream jsTest parity: `PitchCalculationTest.kt` 写経（`tests/upstream-parity/pitchCalculation.test.ts`）
 - [x] upstream jsTest parity: `LyricsReplacementTest.kt` 写経（`tests/upstream-parity/lyricsReplacement.test.ts`）
