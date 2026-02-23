@@ -90,16 +90,16 @@
 
 ### 3-1. MVP入出力
 
-- [ ] `src/core/io/Vsqx.ts` を追加
-- [ ] tempo/timeSignatures/notes/tracks の parse 実装
-- [ ] 必要十分な VSQX write 実装
-- [ ] `extras.vsqx` 退避方針を実装（保存中心）
+- [x] `src/core/io/Vsqx.ts` を追加
+- [x] tempo/timeSignatures/notes/tracks の parse 実装
+- [x] 必要十分な VSQX write 実装
+- [x] `extras.vsqx` 退避方針を実装（保存中心）
 
 ### 3-2. ZIP/XML 比較
 
-- [ ] ZIP 展開比較ユーティリティを実装
-- [ ] XML 最小正規化比較を実装
-- [ ] 要素順序の保持を検証
+- [x] ZIP 展開比較ユーティリティを実装
+- [x] XML 最小正規化比較を実装
+- [x] 要素順序の保持を検証
 - [ ] `vsqx -> project -> vsqx` 一致テストを追加
 - [ ] UFDATA 意味比較の二層検証を追加
 
@@ -127,7 +127,7 @@
 
 ## 進行中（1つだけ）
 
-- [ ] `src/core/io/Vsqx.ts` を追加
+- [ ] `vsqx -> project -> vsqx` 一致テストを追加
 
 ## テスト先行チェックポイント（TESTING.md 準拠）
 
