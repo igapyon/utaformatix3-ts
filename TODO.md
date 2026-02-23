@@ -107,15 +107,15 @@
 
 ### 4-1. generate
 
-- [ ] `src/core/io/MusicXml.ts` を追加
-- [ ] generate モード実装
-- [ ] XML正規化比較 + UFDATA比較テストを追加
+- [x] `src/core/io/MusicXml.ts` を追加
+- [x] generate モード実装
+- [x] XML正規化比較 + UFDATA比較テストを追加
 
 ### 4-2. preserve
 
-- [ ] preserve モード実装
-- [ ] no-op で入力テキスト完全一致（diff 0）を実装
-- [ ] 変更ありケースの XML/UFDATA 比較テストを追加
+- [x] preserve モード実装
+- [x] no-op で入力テキスト完全一致（diff 0）を実装
+- [x] 変更ありケースの XML/UFDATA 比較テストを追加
 
 ## 5. 追従タスク（upstream更新ごと）
 
@@ -127,7 +127,7 @@
 
 ## 進行中（1つだけ）
 
-- [ ] `src/core/io/MusicXml.ts` を追加
+- [ ] `./scripts/sync-upstream.sh <ref>` を実行
 
 ## テスト先行チェックポイント（TESTING.md 準拠）
 
@@ -135,4 +135,4 @@
 - [x] Phase 2: `parseUfdata` 実装直後に `project -> ufdata -> project` round-trip テストを追加する
 - [x] Phase 2: golden ufdata を少数ケースで先に固定し、実装をそれに合わせる
 - [x] Phase 3: VSQX は機能追加ごとに「ZIP構造比較 + UFDATA意味比較」の二層テストを追加する
-- [ ] Phase 4: MusicXML preserve は最初に no-op diff 0 テストを追加し、以後の変更をガードする
+- [x] Phase 4: MusicXML preserve は最初に no-op diff 0 テストを追加し、以後の変更をガードする
