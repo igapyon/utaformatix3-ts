@@ -26,7 +26,7 @@
 |---|---|---|---|---|
 | `upstream/utaformatix/core/src/main/kotlin/core/model` | `src/core/model` | Core model | in_progress | Phase 1 着手済み |
 | `upstream/utaformatix/core/src/main/kotlin/core/util` | `src/core/util` | Core utility | planned | Phase 1 で最小導入 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process` | `src/core/process` | Format process | planned | Phase 2-4 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process` | `src/core/process` | Format process | in_progress | 基礎 process (Eval/Interpolation/LengthLimit/Resampling/RDP/Zoom) を追加 |
 | `upstream/utaformatix/core/src/main/kotlin/core/io` | `src/core/io` | I/O, parser/writer | in_progress | Phase 2 着手済み |
 | `upstream/utaformatix/core/src/main/kotlin/core/exception` | `src/core/exception` | Error model | planned | diagnostics 方針に合わせる |
 | `upstream/utaformatix/core/src/main/kotlin/core/external` | `src/core/external` | External bindings | planned | 必要最小限で移植 |
@@ -64,11 +64,20 @@
 | `upstream/utaformatix/core/src/main/kotlin/core/util/ChainCall.kt` | `src/core/util/ChainCall.ts` | in_progress | runIf/runIfAllNotNull を追加 |
 | `upstream/utaformatix/core/src/main/kotlin/core/util/TextUtil.kt` | `src/core/util/TextUtil.ts` | in_progress | 文字列 helper を写経 |
 | `upstream/utaformatix/core/src/main/kotlin/core/util/EncodingUtil.kt` | `src/core/util/EncodingUtil.ts` | in_progress | encode/decode helper を写経 |
+| `upstream/utaformatix/core/src/main/kotlin/core/util/XmlExtension.kt` | `src/core/util/XmlExtension.ts` | in_progress | DOM helper 群を写経（Error 例外化） |
+| `upstream/utaformatix/core/src/main/kotlin/core/util/MidiUtil.kt` | `src/core/util/MidiUtil.ts` | in_progress | MIDI 補助関数を写経 |
 | `upstream/utaformatix/core/src/main/kotlin/core/external/Encoding.kt` | `src/core/external/Encoding.ts` | in_progress | external wrapper を最小導入 |
 | `upstream/utaformatix/core/src/main/kotlin/core/io/UfData.kt` | `src/core/io/UfData.ts` | in_progress | parse/write + version warning + diagnostics 形式を実装 |
 | `upstream/utaformatix/core/src/main/kotlin/core/io/Vsqx.kt` | `src/core/io/Vsqx.ts` | in_progress | VSQX parse/write + PIT/PBS control 対応 + round-trip/semantic テスト追加 |
 | `upstream/utaformatix/core/src/main/kotlin/core/io/MusicXml.kt` | `src/core/io/MusicXml.ts` | in_progress | generate/preserve(no-op diff 0) + tie 結合/notations/direction 出力の parity 強化 |
 | `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/VocaloidPartPitchData.kt` | `src/core/process/pitch/VocaloidPitchConversion.ts` | in_progress | VSQX PIT/PBS <-> internal pitch 変換を導入 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/Eval.kt` | `src/core/process/Eval.ts` | in_progress | `evalFractionOrNull` を写経 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/Interpolation.kt` | `src/core/process/Interpolation.ts` | in_progress | linear/cosine 補間を写経 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/LengthLimit.kt` | `src/core/process/LengthLimit.ts` | in_progress | project/track 長さ制限を写経 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/ProjectZooming.kt` | `src/core/process/ProjectZooming.ts` | in_progress | zoom/needWarning/zoom options を写経 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/Resampling.kt` | `src/core/process/Resampling.ts` | in_progress | resampled/dotResampled を写経 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/RdpSimplification.kt` | `src/core/process/RdpSimplification.ts` | in_progress | simplifyShape/simplifyShapeTo を写経 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/TimeUnitConversion.kt` | `src/core/process/pitch/TimeUnitConversion.ts` | in_progress | `milliSecFromTick` を写経 |
 | `upstream/utaformatix/src/jsTest/kotlin/process/pitch/TickTimeTransformerTest.kt` | `tests/upstream-parity/tickTimeTransformer.test.ts` | verified | upstream jsTest parity 済み |
 | `upstream/utaformatix/src/jsTest/kotlin/process/pitch/PitchCalculationTest.kt` | `tests/upstream-parity/pitchCalculation.test.ts` | verified | upstream jsTest parity 済み |
 | `upstream/utaformatix/src/jsTest/kotlin/process/lyrics/LyricsReplacementTest.kt` | `tests/upstream-parity/lyricsReplacement.test.ts` | verified | upstream jsTest parity 済み |
