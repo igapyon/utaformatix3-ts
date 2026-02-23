@@ -1,0 +1,5 @@
+{
+  "id": "vsqx_multipart_ja_01",
+  "features": ["notes", "tempo", "timesig", "lyrics", "phoneme", "multi-part"],
+  "knownLimitations": []
+}

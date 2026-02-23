@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vsq4 xmlns="http://www.yamaha.co.jp/vocaloid/schema/vsq4/">
+  <masterTrack>
+    <preMeasure>0</preMeasure>
+    <timeSig><m>0</m><nu>4</nu><de>4</de></timeSig>
+    <tempo><t>0</t><v>12000</v></tempo>
+  </masterTrack>
+  <vsTrack>
+    <tNo>0</tNo>
+    <name>Multipart Track</name>
+    <vsPart>
+      <t>0</t>
+      <playTime>960</playTime>
+      <note>
+        <t>0</t>
+        <dur>480</dur>
+        <n>60</n>
+        <y>あ</y>
+        <p>a</p>
+      </note>
+    </vsPart>
+    <vsPart>
+      <t>1920</t>
+      <playTime>960</playTime>
+      <note>
+        <t>0</t>
+        <dur>960</dur>
+        <n>64</n>
+        <y>え</y>
+        <p>e</p>
+      </note>
+    </vsPart>
+  </vsTrack>
+</vsq4>

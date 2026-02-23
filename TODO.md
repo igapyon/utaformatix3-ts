@@ -161,3 +161,7 @@
 - [x] upstream jsTest parity: `PitchCalculationTest.kt` 写経（`tests/upstream-parity/pitchCalculation.test.ts`）
 - [x] upstream jsTest parity: `LyricsReplacementTest.kt` 写経（`tests/upstream-parity/lyricsReplacement.test.ts`）
 - [x] upstream jsTest parity: `PhonemesMappingTest.kt` 写経（`tests/upstream-parity/phonemesMapping.test.ts`）
+- [x] VSQX fixture 強化: multi-track / multi-part ケース追加（`tests/fixtures/vsqx/vsqx_multitrack_ja_01/*`, `tests/fixtures/vsqx/vsqx_multipart_ja_01/*`）
+- [x] MusicXML fixture 駆動 parity 追加: parse + generate round-trip + preserve no-op（`tests/upstream-parity/musicXmlFixtureCases.test.ts`, `tests/fixtures/musicxml/*`）
+- [x] MusicXML 複雑記譜 fixture 追加: direction/notations/voice/staff を含む parse 回帰（`tests/fixtures/musicxml/musicxml_direction_notations_01/*`）
+- [x] レイヤー別失敗診断を強化: UFDATA差分・VSQX archive/xml差分の詳細出力（`tests/upstream-parity/layeredDiagnostics.ts`）

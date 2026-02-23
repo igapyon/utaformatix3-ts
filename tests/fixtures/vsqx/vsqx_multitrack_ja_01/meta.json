@@ -1,0 +1,5 @@
+{
+  "id": "vsqx_multitrack_ja_01",
+  "features": ["notes", "tempo", "timesig", "lyrics", "phoneme", "multi-track"],
+  "knownLimitations": []
+}

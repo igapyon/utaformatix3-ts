@@ -1,9 +1,9 @@
 declare function require(name: string): any;
 
+import { parseMusicXml, writeMusicXml } from "../../src/core/io/MusicXml";
 import { parseUfdata, writeUfdata } from "../../src/core/io/UfData";
-import { parseVsqx, writeVsqx } from "../../src/core/io/Vsqx";
-import { compareArchiveEntries } from "../../src/core/util/VsqxArchiveComparison";
-import { describeArchiveCompare, diffSemanticProject, toSemanticProject } from "./layeredDiagnostics";
+import { areCanonicalXmlEqual, canonicalizeXmlMinimal } from "../../src/core/util/XmlComparison";
+import { diffSemanticProject, toSemanticProject } from "./layeredDiagnostics";
 
 const fs = require("node:fs");
 const path = require("node:path");
@@ -28,7 +28,7 @@ function readText(filePath: string): string {
 }
 
 function getFixtureCaseNames(): string[] {
-  const baseDir = "tests/fixtures/vsqx";
+  const baseDir = "tests/fixtures/musicxml";
   return fs
     .readdirSync(baseDir, { withFileTypes: true })
     .filter((entry: { isDirectory: () => boolean; name: string }) => entry.isDirectory())
@@ -36,54 +36,58 @@ function getFixtureCaseNames(): string[] {
     .sort();
 }
 
-function testVsqxFixtures(): void {
+function testMusicXmlFixtures(): void {
   const caseNames = getFixtureCaseNames();
-  assert(caseNames.length > 0, "no vsqx fixture cases found");
+  assert(caseNames.length > 0, "no musicxml fixture cases found");
 
   for (const caseName of caseNames) {
-    const dir = path.join("tests/fixtures/vsqx", caseName);
-    const inputVsqx = readText(path.join(dir, "input.vsqx"));
+    const dir = path.join("tests/fixtures/musicxml", caseName);
+    const inputMusicXml = readText(path.join(dir, "input.musicxml"));
     const oracleUfDataText = readText(path.join(dir, "oracle.ufdata.json"));
 
-    const parsed = parseVsqx(inputVsqx, { defaultLyric: "あ" });
+    const parsed = parseMusicXml(inputMusicXml, { defaultLyric: "あ" });
     const parsedUfDataProject = canonicalize(
-      toSemanticProject((JSON.parse(writeUfdata(parsed)) as Record<string, any>).project, true),
+      toSemanticProject((JSON.parse(writeUfdata(parsed)) as Record<string, any>).project),
     ) as ReturnType<typeof toSemanticProject>;
     const oracleUfDataProject = canonicalize(
-      toSemanticProject((JSON.parse(oracleUfDataText) as Record<string, any>).project, true),
+      toSemanticProject((JSON.parse(oracleUfDataText) as Record<string, any>).project),
     ) as ReturnType<typeof toSemanticProject>;
     const parseIssues = diffSemanticProject(oracleUfDataProject, parsedUfDataProject);
-
     assert(
       parseIssues.length === 0,
       `${caseName}: UFDATA semantic mismatch after parse\n${parseIssues.join("\n")}`,
     );
 
-    const generated = writeVsqx(parsed);
-    const reparsed = parseVsqx(generated.content, { defaultLyric: "あ" });
-    const regenerated = writeVsqx(reparsed);
-
-    const archiveCompareResult = compareArchiveEntries(generated.content, regenerated.content, {
-      canonicalizeXmlEntries: true,
-    });
-    assert(
-      archiveCompareResult.ok,
-      `${caseName}: ${describeArchiveCompare(archiveCompareResult)}`,
-    );
-
+    const generated = writeMusicXml(parsed, { mode: "generate" });
+    const reparsed = parseMusicXml(generated, { defaultLyric: "あ" });
     const reparsedUfDataProject = canonicalize(
-      toSemanticProject((JSON.parse(writeUfdata(reparsed)) as Record<string, any>).project, true),
+      toSemanticProject((JSON.parse(writeUfdata(reparsed)) as Record<string, any>).project),
     ) as ReturnType<typeof toSemanticProject>;
-    const roundTripIssues = diffSemanticProject(parsedUfDataProject, reparsedUfDataProject);
+    const generateIssues = diffSemanticProject(parsedUfDataProject, reparsedUfDataProject);
     assert(
-      roundTripIssues.length === 0,
-      `${caseName}: UFDATA semantic mismatch after VSQX round-trip\n${roundTripIssues.join("\n")}`,
+      generateIssues.length === 0,
+      `${caseName}: UFDATA semantic mismatch after generate round-trip\n${generateIssues.join("\n")}`,
+    );
+    const regenerated = writeMusicXml(reparsed, { mode: "generate" });
+    assert(
+      areCanonicalXmlEqual(generated, regenerated),
+      [
+        `${caseName}: XML canonicalized comparison mismatch after generate round-trip`,
+        `XML/generated(canonical)=${canonicalizeXmlMinimal(generated).slice(0, 240)}`,
+        `XML/regenerated(canonical)=${canonicalizeXmlMinimal(regenerated).slice(0, 240)}`,
+      ].join("\n"),
     );
 
-    // Keep UFDATA parse path in the same fixture flow.
+    const preservedNoOp = writeMusicXml(parsed, {
+      mode: "preserve",
+      originalText: inputMusicXml,
+      noOp: true,
+    });
+    assert(preservedNoOp === inputMusicXml, `${caseName}: preserve no-op should be diff 0`);
+
     const reparsedFromUfData = parseUfdata(JSON.stringify({ formatVersion: 1, project: parsedUfDataProject }));
     assert(reparsedFromUfData.tracks.length === parsed.tracks.length, `${caseName}: ufdata reparse track mismatch`);
   }
 }
 
-testVsqxFixtures();
+testMusicXmlFixtures();

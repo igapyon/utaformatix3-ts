@@ -84,13 +84,13 @@
 | `upstream/utaformatix/core/src/main/kotlin/core/process/lyrics/japanese/Cleanup.kt` | `src/core/process/lyrics/japanese/Cleanup.ts` | verified | `tests/upstream-parity/lyricsMappingAndJapanese.test.ts` で検証 |
 | `upstream/utaformatix/core/src/main/kotlin/core/process/lyrics/japanese/Conversion.kt` | `src/core/process/lyrics/japanese/Conversion.ts` | verified | `tests/upstream-parity/lyricsMappingAndJapanese.test.ts` で検証 |
 | `upstream/utaformatix/core/src/main/kotlin/core/process/lyrics/japanese/Words.kt` | `src/core/process/lyrics/japanese/Words.ts` | verified | `tests/upstream-parity/lyricsMappingAndJapanese.test.ts` で検証 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/Eval.kt` | `src/core/process/Eval.ts` | in_progress | `evalFractionOrNull` を写経 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/Interpolation.kt` | `src/core/process/Interpolation.ts` | in_progress | linear/cosine 補間を写経 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/LengthLimit.kt` | `src/core/process/LengthLimit.ts` | in_progress | project/track 長さ制限を写経 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/ProjectZooming.kt` | `src/core/process/ProjectZooming.ts` | in_progress | zoom/needWarning/zoom options を写経 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/Resampling.kt` | `src/core/process/Resampling.ts` | in_progress | resampled/dotResampled を写経 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/RdpSimplification.kt` | `src/core/process/RdpSimplification.ts` | in_progress | simplifyShape/simplifyShapeTo を写経 |
-| `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/TimeUnitConversion.kt` | `src/core/process/pitch/TimeUnitConversion.ts` | in_progress | `milliSecFromTick` を写経 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/Eval.kt` | `src/core/process/Eval.ts` | verified | `tests/upstream-parity/processCoreFixtureCases.test.ts` で検証 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/Interpolation.kt` | `src/core/process/Interpolation.ts` | verified | `tests/upstream-parity/processCoreFixtureCases.test.ts` で検証 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/LengthLimit.kt` | `src/core/process/LengthLimit.ts` | verified | `tests/upstream-parity/processCoreFixtureCases.test.ts` で検証 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/ProjectZooming.kt` | `src/core/process/ProjectZooming.ts` | verified | `tests/upstream-parity/processCoreFixtureCases.test.ts` で検証 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/Resampling.kt` | `src/core/process/Resampling.ts` | verified | `tests/upstream-parity/processCoreFixtureCases.test.ts` で検証 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/RdpSimplification.kt` | `src/core/process/RdpSimplification.ts` | verified | `tests/upstream-parity/processCoreFixtureCases.test.ts` で検証 |
+| `upstream/utaformatix/core/src/main/kotlin/core/process/pitch/TimeUnitConversion.kt` | `src/core/process/pitch/TimeUnitConversion.ts` | verified | `tests/upstream-parity/processCoreFixtureCases.test.ts` で検証 |
 | `upstream/utaformatix/src/jsTest/kotlin/process/pitch/TickTimeTransformerTest.kt` | `tests/upstream-parity/tickTimeTransformer.test.ts` | verified | upstream jsTest parity 済み |
 | `upstream/utaformatix/src/jsTest/kotlin/process/pitch/PitchCalculationTest.kt` | `tests/upstream-parity/pitchCalculation.test.ts` | verified | upstream jsTest parity 済み |
 | `upstream/utaformatix/src/jsTest/kotlin/process/lyrics/LyricsReplacementTest.kt` | `tests/upstream-parity/lyricsReplacement.test.ts` | verified | upstream jsTest parity 済み |

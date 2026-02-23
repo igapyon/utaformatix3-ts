@@ -1,0 +1,42 @@
+{
+  "eval": {
+    "inputs": ["2", "5/3", "x"],
+    "expected": [2, 1.6666666666666667, null]
+  },
+  "interpolationLinear": {
+    "points": [[0, 0], [4, 4]],
+    "interval": 2,
+    "expected": [[0, 0], [2, 2], [4, 4]]
+  },
+  "resamplingDot": {
+    "points": [[0, 1], [10, null], [20, 2]],
+    "interval": 10,
+    "expected": [[0, 1], [10, null], [20, 2]]
+  },
+  "rdp": {
+    "line": [[0, 0], [1, 0.01], [2, 0], [3, 0]],
+    "epsilon": 0.02,
+    "expected": [[0, 0], [3, 0]],
+    "to": {
+      "line": [[0, 0], [1, 1], [2, 0], [3, 1], [4, 0]],
+      "maxPointCount": 4
+    }
+  },
+  "projectLengthAndZoom": {
+    "factor": 2,
+    "maxLength": 300,
+    "expect": {
+      "limitedNoteCount": 1,
+      "limitedTempoCount": 1,
+      "limitedPitchCount": 1,
+      "zoomedSecondNoteTickOff": 960,
+      "zoomedSecondTempoBpm": 300
+    }
+  },
+  "timeUnit": {
+    "tick": 480,
+    "bpm": 120,
+    "expectedMilliSec": 500
+  }
+}
+
