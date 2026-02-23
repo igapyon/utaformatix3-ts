@@ -168,35 +168,27 @@
           });
         }
 
-        if (location.protocol === "file:") {
-          var status = document.getElementById("app-status");
-          if (status) {
-            status.textContent = "Loading local IIFE bundle from dist-lib...";
-          }
-          var script = document.createElement("script");
-          script.src = "./dist-lib/utaformatix3-ts.iife.js";
-          script.onload = function () {
-            if (!window.Utaformatix3Ts) {
-              if (status) {
-                status.textContent = "IIFE is not available. Run npm run build:lib first.";
-              }
-              return;
-            }
-            initPlayground(window.Utaformatix3Ts);
-          };
-          script.onerror = function () {
-            if (status) {
-              status.textContent = "Failed to load dist-lib/utaformatix3-ts.iife.js. Run npm run build:lib first.";
-            }
-          };
-          document.body.appendChild(script);
-          return;
+        var status = document.getElementById("app-status");
+        if (status) {
+          status.textContent = "Loading IIFE bundle from dist-lib...";
         }
-
-        var moduleScript = document.createElement("script");
-        moduleScript.type = "module";
-        moduleScript.src = "/src/main.ts";
-        document.body.appendChild(moduleScript);
+        var script = document.createElement("script");
+        script.src = "./dist-lib/utaformatix3-ts.iife.js";
+        script.onload = function () {
+          if (!window.Utaformatix3Ts) {
+            if (status) {
+              status.textContent = "IIFE is not available. Run npm run build:lib first.";
+            }
+            return;
+          }
+          initPlayground(window.Utaformatix3Ts);
+        };
+        script.onerror = function () {
+          if (status) {
+            status.textContent = "Failed to load dist-lib/utaformatix3-ts.iife.js. Run npm run build:lib first.";
+          }
+        };
+        document.body.appendChild(script);
       })();
     </script>
   </body>
