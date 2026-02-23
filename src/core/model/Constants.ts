@@ -1,0 +1,11 @@
+export const TICKS_IN_BEAT = 480;
+export const TICKS_IN_FULL_NOTE = TICKS_IN_BEAT * 4;
+export const KEY_IN_OCTAVE = 12;
+export const DEFAULT_LYRIC = "あ";
+export const DEFAULT_BPM = 120.0;
+export const DEFAULT_METER_HIGH = 4;
+export const DEFAULT_METER_LOW = 4;
+export const DEFAULT_KEY = 60;
+export const KEY_CENTER_C = 60.0;
+export const LOG_FRQ_CENTER_C = 5.566914341;
+export const LOG_FRQ_DIFF_ONE_KEY = 0.05776226505;

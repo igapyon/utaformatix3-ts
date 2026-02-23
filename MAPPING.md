@@ -24,10 +24,10 @@
 
 | upstream path | ts path | scope | status | notes |
 |---|---|---|---|---|
-| `upstream/utaformatix/core/src/main/kotlin/core/model` | `src/core/model` | Core model | planned | Phase 1 最優先 |
+| `upstream/utaformatix/core/src/main/kotlin/core/model` | `src/core/model` | Core model | in_progress | Phase 1 着手済み |
 | `upstream/utaformatix/core/src/main/kotlin/core/util` | `src/core/util` | Core utility | planned | Phase 1 で最小導入 |
 | `upstream/utaformatix/core/src/main/kotlin/core/process` | `src/core/process` | Format process | planned | Phase 2-4 |
-| `upstream/utaformatix/core/src/main/kotlin/core/io` | `src/core/io` | I/O, parser/writer | planned | Phase 2-4 |
+| `upstream/utaformatix/core/src/main/kotlin/core/io` | `src/core/io` | I/O, parser/writer | in_progress | Phase 2 着手済み |
 | `upstream/utaformatix/core/src/main/kotlin/core/exception` | `src/core/exception` | Error model | planned | diagnostics 方針に合わせる |
 | `upstream/utaformatix/core/src/main/kotlin/core/external` | `src/core/external` | External bindings | planned | 必要最小限で移植 |
 | `upstream/utaformatix/core/src/main/resources/format_templates` | `src/resources/format_templates` | Templates | planned | 実装進捗に応じて追加 |
@@ -38,13 +38,35 @@
 
 ## ファイル対応（着手時に追記）
 
-形式:
-
-`upstream/utaformatix/<...>.kt -> src/<...>.ts`
-
-例:
-
-`upstream/utaformatix/core/src/main/kotlin/core/model/Project.kt -> src/core/model/Project.ts`
+| upstream file | ts file | status | notes |
+|---|---|---|---|
+| `upstream/utaformatix/core/src/main/kotlin/core/model/Project.kt` | `src/core/model/Project.ts` | in_progress | MVP 版を追加 |
+| `upstream/utaformatix/core/src/main/kotlin/core/model/Track.kt` | `src/core/model/Track.ts` | in_progress | MVP 版を追加 |
+| `upstream/utaformatix/core/src/main/kotlin/core/model/Note.kt` | `src/core/model/Note.ts` | in_progress | MVP 版を追加 |
+| `upstream/utaformatix/core/src/main/kotlin/core/model/Tempo.kt` | `src/core/model/Tempo.ts` | in_progress | default helper 追加 |
+| `upstream/utaformatix/core/src/main/kotlin/core/model/TimeSignature.kt` | `src/core/model/TimeSignature.ts` | in_progress | display/ticks helper 追加 |
+| `upstream/utaformatix/core/src/main/kotlin/core/model/Constants.kt` | `src/core/model/Constants.ts` | in_progress | 定数を写経 |
+| `upstream/utaformatix/core/src/main/kotlin/core/model/ConversionParams.kt` | `src/core/model/ConversionParams.ts` | in_progress | default helper 追加 |
+| `upstream/utaformatix/core/src/main/kotlin/core/model/ExportNotification.kt` | `src/core/model/ExportNotification.ts` | in_progress | sealed class を union 化 |
+| `upstream/utaformatix/core/src/main/kotlin/core/model/ExportResult.kt` | `src/core/model/ExportResult.ts` | in_progress | `Blob` は暫定で `unknown` |
+| `upstream/utaformatix/core/src/main/kotlin/core/model/Feature.kt` | `src/core/model/Feature.ts` | in_progress | Feature/FeatureConfig を写経 |
+| `upstream/utaformatix/core/src/main/kotlin/core/model/Pitch.kt` | `src/core/model/Pitch.ts` | in_progress | data 型を写経 |
+| `upstream/utaformatix/core/src/main/kotlin/core/model/Format.kt` | `src/core/model/Format.ts` | in_progress | 初期は最小 enum のみ |
+| `upstream/utaformatix/core/src/main/kotlin/core/model/ImportParams.kt` | `src/core/model/ImportParams.ts` | in_progress | default helper 追加 |
+| `upstream/utaformatix/core/src/main/kotlin/core/model/ImportWarning.kt` | `src/core/model/ImportWarning.ts` | in_progress | discriminated union（`kind`） |
+| `upstream/utaformatix/core/src/main/kotlin/core/model/JapaneseLyricsType.kt` | `src/core/model/JapaneseLyricsType.ts` | in_progress | enum を写経 |
+| `upstream/utaformatix/core/src/main/kotlin/core/model/PhonemesMappingPreset.kt` | `src/core/model/PhonemesMappingPreset.ts` | in_progress | request 型を process 側に追加 |
+| `upstream/utaformatix/core/src/main/kotlin/core/model/ProjectContainer.kt` | `src/core/model/ProjectContainer.ts` | in_progress | container 型を追加 |
+| `upstream/utaformatix/core/src/main/kotlin/core/model/TickCounter.kt` | `src/core/model/TickCounter.ts` | in_progress | class を写経 |
+| `upstream/utaformatix/core/src/main/kotlin/core/model/ValueTree.kt` | `src/core/model/ValueTree.ts` | in_progress | variant helper を写経 |
+| `upstream/utaformatix/core/src/main/kotlin/core/external/ValueTree.kt` | `src/core/external/ValueTree.ts` | in_progress | external 型を最小導入 |
+| `upstream/utaformatix/core/src/main/kotlin/core/util/Result.kt` | `src/core/util/Result.ts` | in_progress | runCatchingCancellable を追加 |
+| `upstream/utaformatix/core/src/main/kotlin/core/util/ChainCall.kt` | `src/core/util/ChainCall.ts` | in_progress | runIf/runIfAllNotNull を追加 |
+| `upstream/utaformatix/core/src/main/kotlin/core/util/TextUtil.kt` | `src/core/util/TextUtil.ts` | in_progress | 文字列 helper を写経 |
+| `upstream/utaformatix/core/src/main/kotlin/core/util/EncodingUtil.kt` | `src/core/util/EncodingUtil.ts` | in_progress | encode/decode helper を写経 |
+| `upstream/utaformatix/core/src/main/kotlin/core/external/Encoding.kt` | `src/core/external/Encoding.ts` | in_progress | external wrapper を最小導入 |
+| `upstream/utaformatix/core/src/main/kotlin/core/io/UfData.kt` | `src/core/io/UfData.ts` | in_progress | parse/write API を初期実装 |
+| `(derived)` | `src/core/model/assertProjectInvariants.ts` | in_progress | Phase 1 不変条件チェック |
 
 ## ステータス定義
 
