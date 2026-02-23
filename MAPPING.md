@@ -65,7 +65,7 @@
 | `upstream/utaformatix/core/src/main/kotlin/core/util/TextUtil.kt` | `src/core/util/TextUtil.ts` | in_progress | 文字列 helper を写経 |
 | `upstream/utaformatix/core/src/main/kotlin/core/util/EncodingUtil.kt` | `src/core/util/EncodingUtil.ts` | in_progress | encode/decode helper を写経 |
 | `upstream/utaformatix/core/src/main/kotlin/core/external/Encoding.kt` | `src/core/external/Encoding.ts` | in_progress | external wrapper を最小導入 |
-| `upstream/utaformatix/core/src/main/kotlin/core/io/UfData.kt` | `src/core/io/UfData.ts` | in_progress | parse/write API を初期実装 |
+| `upstream/utaformatix/core/src/main/kotlin/core/io/UfData.kt` | `src/core/io/UfData.ts` | in_progress | parse/write + version warning + diagnostics 形式を実装 |
 | `(derived)` | `src/core/model/assertProjectInvariants.ts` | in_progress | Phase 1 不変条件チェック |
 
 ## ステータス定義

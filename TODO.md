@@ -70,13 +70,13 @@
 - [x] `src/core/io/UfData.ts` を追加
 - [x] `parseUfdata(json: string | object): Project` を実装
 - [x] `writeUfdata(project: Project, opts?): string` を実装
-- [ ] upstream versioning 仕様を確認して反映
+- [x] upstream versioning 仕様を確認して反映
 
 ### 2-2. 比較可能性
 
 - [x] JSON canonicalize 方針をテスト実装
 - [x] 並べ替え/丸めを勝手に行っていないことを確認
-- [ ] diagnostics 形式を固定（最低限）
+- [x] diagnostics 形式を固定（最低限）
 
 ### 2-3. フィクスチャとテスト
 
@@ -84,7 +84,7 @@
 - [x] golden ufdata ケースを 1 件追加
 - [x] `project -> ufdata -> project` round-trip テストを追加
 - [x] semantic 同一（notes/tempo/timeSignatures）検証を追加
-- [ ] `extras` は比較対象外（Phase 1-2）をテストに明記
+- [x] `extras` は比較対象外（Phase 1-2）をテストに明記
 
 ## 3. Phase 3: VSQX 写経
 
@@ -127,7 +127,7 @@
 
 ## 進行中（1つだけ）
 
-- [ ] upstream versioning 仕様を確認して反映
+- [ ] `src/core/io/Vsqx.ts` を追加
 
 ## テスト先行チェックポイント（TESTING.md 準拠）
 
