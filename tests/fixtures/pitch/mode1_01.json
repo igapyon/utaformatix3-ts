@@ -1,0 +1,23 @@
+{
+  "kind": "mode1",
+  "input": {
+    "notes": [
+      { "id": 0, "key": 60, "lyric": "a", "tickOn": 0, "tickOff": 240 },
+      { "id": 1, "key": 62, "lyric": "i", "tickOn": 240, "tickOff": 480 }
+    ],
+    "pitch": {
+      "data": [
+        [0, 0],
+        [120, 0.5],
+        [240, 0]
+      ],
+      "isAbsolute": false
+    }
+  },
+  "expected": {
+    "exportNoteCount": 2,
+    "importIsAbsolute": true,
+    "importPointCountMin": 1
+  }
+}
+

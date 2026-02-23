@@ -1,0 +1,32 @@
+{
+  "kind": "svp",
+  "input": {
+    "points": [[0, 0], [120, 1]],
+    "mode": "linear",
+    "notesWithVibrato": [
+      {
+        "noteStartTick": 0,
+        "noteLengthTick": 240,
+        "vibratoStart": null,
+        "easeInLength": null,
+        "easeOutLength": null,
+        "depth": null,
+        "frequency": null,
+        "phase": null
+      }
+    ],
+    "tempos": [
+      { "tickPosition": 0, "bpm": 120 }
+    ],
+    "vibratoEnvPoints": [],
+    "vibratoEnvMode": "linear",
+    "vibratoDefaultParameters": null,
+    "appendInput": [[0, 0], [10, 0], [20, 1]]
+  },
+  "expected": {
+    "processedPointCountMin": 10,
+    "appendedPointCountMin": 2,
+    "appendedFirstTick": 0
+  }
+}
+

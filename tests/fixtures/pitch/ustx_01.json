@@ -1,0 +1,46 @@
+{
+  "kind": "ustx",
+  "input": {
+    "notes": [
+      { "id": 0, "key": 60, "lyric": "a", "tickOn": 0, "tickOff": 240 },
+      { "id": 1, "key": 62, "lyric": "i", "tickOn": 240, "tickOff": 480 }
+    ],
+    "tempos": [
+      { "tickPosition": 0, "bpm": 120 }
+    ],
+    "pitch": {
+      "data": [
+        [0, 0],
+        [120, 0.5],
+        [240, 0]
+      ],
+      "isAbsolute": false
+    },
+    "part": {
+      "points": [],
+      "notes": [
+        {
+          "points": [
+            { "x": 0, "y": 0, "shape": "io" },
+            { "x": 100, "y": 10, "shape": "l" }
+          ],
+          "vibrato": { "length": 0, "period": 175, "depth": 0, "fadeIn": 0, "fadeOut": 0, "phaseShift": 0, "shift": 0 }
+        },
+        {
+          "points": [
+            { "x": 0, "y": 0, "shape": "io" },
+            { "x": 100, "y": 10, "shape": "l" }
+          ],
+          "vibrato": { "length": 0, "period": 175, "depth": 0, "fadeIn": 0, "fadeOut": 0, "phaseShift": 0, "shift": 0 }
+        }
+      ]
+    }
+  },
+  "expected": {
+    "importPointCountMin": 1,
+    "exportPointCountMin": 1,
+    "mergedPointCount": 2,
+    "reducedPointCount": 3
+  }
+}
+
