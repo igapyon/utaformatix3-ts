@@ -119,6 +119,17 @@ preserve モード
 XML正規化比較
 UFDATA比較
 
+### 2.4 比較ルール（厳密比較 / 許容差分）
+
+| layer | 比較対象 | 厳密比較 | 許容差分 | 備考 |
+|---|---|---|---|---|
+| UFDATA | notes/tempo/timeSignatures/tracks | Yes | No | semantic 同一の主判定 |
+| UFDATA | extras | Phase 1-2: No | Yes | Phase 3 以降で段階導入 |
+| VSQX ZIP | エントリ名集合 | Yes | No | 欠落/過剰は失敗 |
+| VSQX XML | 意味に無関係な整形 | No | Yes | 空白・属性順・XML宣言のみ |
+| VSQX XML | 要素順序 | Yes | No | 順序変更は失敗 |
+| MusicXML preserve no-op | 入力テキスト | Yes | No | diff 0 を絶対保証 |
+
 ## 3. テスト分類（写経順）
 
 テストは実装フェーズに対応して構成します。
