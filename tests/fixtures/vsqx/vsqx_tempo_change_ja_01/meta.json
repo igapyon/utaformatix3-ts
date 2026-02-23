@@ -1,0 +1,5 @@
+{
+  "id": "vsqx_tempo_change_ja_01",
+  "features": ["notes", "tempo-change", "timesig", "lyrics", "phoneme"],
+  "knownLimitations": []
+}

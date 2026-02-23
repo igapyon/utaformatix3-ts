@@ -1,0 +1,34 @@
+{
+  "formatVersion": 1,
+  "project": {
+    "name": "vsqx",
+    "tracks": [
+      {
+        "name": "Tiny Track",
+        "notes": [
+          {
+            "key": 60,
+            "lyric": "あ",
+            "tickOn": 240,
+            "tickOff": 720,
+            "phoneme": "a"
+          }
+        ]
+      }
+    ],
+    "timeSignatures": [
+      {
+        "measurePosition": 0,
+        "numerator": 4,
+        "denominator": 4
+      }
+    ],
+    "tempos": [
+      {
+        "tickPosition": 0,
+        "bpm": 120
+      }
+    ],
+    "measurePrefix": 0
+  }
+}
