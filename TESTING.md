@@ -205,10 +205,13 @@ Phase 4: MusicXML
 npm run build:lib
 ```
 
-生成後、`playground.html` をブラウザで開いて以下を確認します。
+生成後、以下のいずれかで確認します。
 
-- `IIFE loaded.` が表示されること
-- `window.Utaformatix3Ts` 経由の最小 API 呼び出し結果が表示されること
+- 方針: ブラウザ確認のために HTTP サーバーは起動しない
+- ローカル Chrome 直開き: `npm run build:lib` 実行後に `index.html` を `file://` で開く
+
+- 画面上で入力ファイルを選択できること
+- `Download VSQX` / `Download MusicXML` / `Download UFDATA` で変換ファイルを保存できること
 
 ## 6.1 全体テスト一括実行
 

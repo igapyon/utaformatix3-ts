@@ -4,8 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "vite",
     "build": "vite build",
     "build:lib": "vite build --config vite.lib.config.mjs",
+    "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test:parity": "node scripts/run-upstream-parity-tests.mjs",
     "test:all": "npm run typecheck && npm run test:parity"
