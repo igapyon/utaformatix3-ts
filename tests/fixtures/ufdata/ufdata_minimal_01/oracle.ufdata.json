@@ -15,8 +15,16 @@
           }
         ],
         "pitch": {
-          "ticks": [0, 240, 480],
-          "values": [0, 10, null],
+          "ticks": [
+            0,
+            240,
+            480
+          ],
+          "values": [
+            0,
+            10,
+            null
+          ],
           "isAbsolute": false
         }
       }
