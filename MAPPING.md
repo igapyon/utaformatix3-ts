@@ -67,6 +67,7 @@
 | `upstream/utaformatix/core/src/main/kotlin/core/external/Encoding.kt` | `src/core/external/Encoding.ts` | in_progress | external wrapper を最小導入 |
 | `upstream/utaformatix/core/src/main/kotlin/core/io/UfData.kt` | `src/core/io/UfData.ts` | in_progress | parse/write + version warning + diagnostics 形式を実装 |
 | `upstream/utaformatix/core/src/main/kotlin/core/io/Vsqx.kt` | `src/core/io/Vsqx.ts` | in_progress | VSQX MVP parse/write + extras.vsqx + round-trip/semantic テスト追加 |
+| `upstream/utaformatix/core/src/main/kotlin/core/io/MusicXml.kt` | `src/core/io/MusicXml.ts` | in_progress | generate/preserve(no-op diff 0) + semantic 比較テスト追加 |
 | `(derived)` | `src/core/util/XmlComparison.ts` | in_progress | XML 最小正規化比較（空白/属性順） |
 | `(derived)` | `src/core/util/VsqxArchiveComparison.ts` | in_progress | ZIP展開後エントリ比較ユーティリティ |
 | `(derived)` | `src/core/model/assertProjectInvariants.ts` | in_progress | Phase 1 不変条件チェック |
